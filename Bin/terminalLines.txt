@@ -1,0 +1,7 @@
+./BorisBrain \
+files=sequence_18/images/ \
+calib=sequence_18/camera.txt \
+gamma=sequence_18/pcalib.txt \
+vignette=sequence_18/vignette.png \
+preset=0 \
+mode=0
