@@ -14,69 +14,72 @@
 
 #include "videoStream.h"
 
-
-
-videoStream::videoStream(int camIndex, bool useHack = false, bool UseGray = false) : cameraIndex(camIndex), useHack(useHack), useOnlyGrayValues(UseGray)
+namespace Boris_Brain
 {
-    videocaptureStream = new cv::VideoCapture();
-    videocaptureStream->open(cameraIndex);
-    if(!videocaptureStream->isOpened()) {
-        std::cout << "Camera not supported / camera not working !" << std::endl;
-        exit(0);
-    }
-    else
+    videoStream::videoStream(int camIndex, bool useHack = false, bool UseGray = false) : useOnlyGrayValues(UseGray)
     {
-        std::cout << "Camera used is : " << camIndex << std::endl;
+        videocaptureStream = new cv::VideoCapture();
+        videocaptureStream->open(camIndex);
+        if(!videocaptureStream->isOpened()) {
+            std::cout << "Camera not supported / camera not working !" << std::endl;
+            exit(0);
+        }
+        else
+        {
+            std::cout << "Camera used is : " << camIndex << std::endl;
+        }
+        /// Use hack to correct openCV bug where you have blank image with working cameras (VERY ANNOYING !!!!)
+        if (useHack)
+        {
+            cv::Mat image;
+            videocaptureStream->read(image);
+        }
     }
 
-    if (useHack)
+    cv::Mat videoStream::getImage()
     {
-        cv::Mat image;
+
+        if (useOnlyGrayValues)
+        {
+            return GrayImages();
+        }
+        else
+        {
+            videocaptureStream->read(image);
+            if (image.empty()) {
+                std::cout
+                        << "Img read is empty !!! Stream is not fonctionning well please check if your cam is recording (check your cables !!!"
+                        << std::endl;
+                exit(0);
+            }
+            return image;
+        }
+    }
+
+    cv::Mat videoStream::GrayImages()
+    {
         videocaptureStream->read(image);
-    }
-}
+        image.convertTo(image, CV_8UC1);
+        cv::cvtColor(image, image, cv::COLOR_RGB2GRAY);
 
-cv::Mat videoStream::getImage()
-{
+        assert(image.type() == CV_8U);
+        assert(image.channels() == 1);
 
-    if (useOnlyGrayValues)
-    {
-        return GrayImages();
-    }
-    else
-    {
-        videocaptureStream->read(image);
         if (image.empty()) {
             std::cout
                     << "Img read is empty !!! Stream is not fonctionning well please check if your cam is recording (check your cables !!!"
                     << std::endl;
             exit(0);
         }
+
         return image;
     }
-}
 
-cv::Mat videoStream::GrayImages()
-{
-    videocaptureStream->read(image);
-    image.convertTo(image, CV_8UC1);
-    cv::cvtColor(image, image, cv::COLOR_RGB2GRAY);
-
-    assert(image.type() == CV_8U);
-    assert(image.channels() == 1);
-
-    if (image.empty()) {
-        std::cout
-                << "Img read is empty !!! Stream is not fonctionning well please check if your cam is recording (check your cables !!!"
-                << std::endl;
-        exit(0);
+    videoStream::~videoStream()
+    {
+        delete videocaptureStream;
+        videocaptureStream->release();
+        std::cout << "closing opencvStream !!" << std::endl;
     }
-
-    return image;
 }
 
-videoStream::~videoStream()
-{
-    delete videocaptureStream;
-    std::cout << "closing opencvStream !!" << std::endl;
-}

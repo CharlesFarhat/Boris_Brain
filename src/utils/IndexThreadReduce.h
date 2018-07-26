@@ -23,7 +23,7 @@
 #include <iostream>
 
 
-
+namespace Boris_Brain {
 namespace dso
 {
 
@@ -206,4 +206,5 @@ private:
 		}
 	}
 };
+}
 }

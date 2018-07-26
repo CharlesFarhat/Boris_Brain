@@ -35,10 +35,15 @@
 using namespace std;
 using namespace dso;
 
-struct Settings{
-    int runningDSOLive;             /// Are you willing to launch a dataset ?
-    int cameraindex;                /// Camera To use
-};
+namespace Boris_Brain
+{
+    struct Settings{
+        int runningDSOLive;             /// Are you willing to launch a dataset ?
+        int cameraindex;                /// Camera To use
+    };
+}
+
+
 
 
 void my_exit_handler(int s)
@@ -64,7 +69,7 @@ int main(int argc, char* argv[])
 {
     CLI::App app("Boris Brain system");
 
-    Settings run_settings;
+    Boris_Brain::Settings run_settings;
     run_settings.runningDSOLive = 1;
     run_settings.cameraindex = 0;
 
@@ -74,7 +79,7 @@ int main(int argc, char* argv[])
 
     CLI11_PARSE(app, argc, argv);
 
-    cout << "Launching Boris brain System, if problem please contact me @ charles.farhat@free.fr" << endl;
+    cout << "Launching Boris brain System, if problem please contact me @ charles200000@maclg.net" << endl;
 
     // hook crtl+C.
     boost::thread exThread = boost::thread(exitThread);
@@ -83,29 +88,23 @@ int main(int argc, char* argv[])
     // TODO : launch REMODE thread to compute High density map
 
 
-    if (!run_settings.runningDSOLive)
+    if (run_settings.runningDSOLive)
+    {
+        // Get Video Feed :
+        cout << "launching the Direct sparse visual odometry system" << endl;
+
+        dso::VO_Pipeline_Live liveDSO(argv, argc);
+        liveDSO.lanchLive(run_settings.cameraindex);
+    }
+    else if (!run_settings.runningDSOLive)
     {
         dso::VO_Pipeline_dataset datasetDSO(argv, argc);
         datasetDSO.launch_VO_Dataset();
     }
     else
     {
-        // Get Video Feed :*
-        // TODO: Create a class VideoStream
-        int cameraNumber(run_settings.cameraindex);
-        std::cout << "Camera used is : " <<cameraNumber << std::endl;
-        cv::VideoCapture cap(cameraNumber);
-        if(!cap.isOpened())
-        {
-            cout << "Cannot open camera or camera is not working !" << endl;
-            exit(0);
-        }
-
-        cout << "launching the Direct sparse visual odometry system" << endl;
-
-        dso::VO_Pipeline_Live liveDSO(argv, argc);
-        liveDSO.lanchLive(cap);
-        cap.release();
+        printf("insuffisent args !");
+        exit(0);
     }
 
     printf("System finished.\n");

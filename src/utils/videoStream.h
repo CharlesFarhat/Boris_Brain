@@ -17,26 +17,27 @@
 
 #include <opencv2/opencv.hpp>
 
-class videoStream
+namespace Boris_Brain
 {
-public:
-    videoStream(int camIndex, bool useHack, bool UseGray);
-    ~videoStream();
 
-    cv::Mat getImage();
+    class videoStream
+    {
+    public:
+        videoStream(int camIndex, bool useHack, bool UseGray);
+        ~videoStream();
 
-private:
+        cv::Mat getImage();
 
-    cv::Mat GrayImages();
+    private:
 
-    cv::VideoCapture* videocaptureStream;
-    int cameraIndex;
-    bool useOnlyGrayValues;    /// this will convert any value into gray scalars
-    bool useHack;             /// Use hack to correct openCV bug where you have blank image with working cameras (VERY ANNOYING !!!!)
-    cv::Mat image;
+        cv::Mat GrayImages();
 
-
-};
+        cv::VideoCapture* videocaptureStream;
+        bool useOnlyGrayValues;    /// this will convert any value into gray scalars
+        cv::Mat image;
 
 
+    };
+
+}
 #endif //ONLINE_PHOTOMETRIC_CALIBRATION_VIDEOSTREAM_H

@@ -84,6 +84,7 @@ LIST(APPEND SOURCEFILES
         src/utils/settings.cpp
         src/utils/Undistort.cpp
         src/utils/globalCalib.cpp
+        src/utils/videoStream.cpp
         src/EnvProcessing/IOWrapper/OpenCV/ImageDisplay_OpenCV.cpp
         src/EnvProcessing/IOWrapper/OpenCV/ImageRW_OpenCV.cpp
         )

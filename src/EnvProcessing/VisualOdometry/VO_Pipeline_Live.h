@@ -38,59 +38,65 @@
 #include "EnvProcessing/VisualOdometry/OptimizationBackend/MatrixAccumulators.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/PixelSelector2.h"
 #include "utils/globalCalib.h"
+#include "utils/videoStream.h"
 
-namespace dso {
+namespace Boris_Brain {
+    namespace dso {
 
-    class VO_Pipeline_dataset
-    {
-    public:
-        VO_Pipeline_dataset(char** argv, int argc);
-        ~VO_Pipeline_dataset();
+        class VO_Pipeline_dataset {
+        public:
+            VO_Pipeline_dataset(char **argv, int argc);
 
-        void parseArgument(char *arg);
-        void settingsDefault(int preset);
-        void launch_VO_Dataset();
+            ~VO_Pipeline_dataset();
 
-    private:
-        std::string vignette = "";
-        std::string gammaCalib = "";
-        std::string source = "";
-        std::string calib = "";
-        double rescale = 1;
-        bool reverse = false;
-        int start=0;
-        int end=100000;
-        bool prefetch = false;
-        float playbackSpeed=0;	// 0 for linearize (play as fast as possible, while sequentializing tracking & mapping). otherwise, factor on timestamps.
-        bool preload=false;
-        bool useSampleOutput=false;
-        int mode=0;
-        dso::FullSystem *fullSystem = 0;
-        ImageFolderReader* reader = 0;
+            void parseArgument(char *arg);
 
+            void settingsDefault(int preset);
 
-    };
+            void launch_VO_Dataset();
 
-
-
-    class VO_Pipeline_Live {
-    public:
-         VO_Pipeline_Live(char** argv, int argc);
-        ~VO_Pipeline_Live();
-
-        void parseArgument(char *arg);
-        void lanchLive(cv::VideoCapture &input);
+        private:
+            std::string vignette = "";
+            std::string gammaCalib = "";
+            std::string source = "";
+            std::string calib = "";
+            double rescale = 1;
+            bool reverse = false;
+            int start = 0;
+            int end = 100000;
+            bool prefetch = false;
+            float playbackSpeed = 0;    // 0 for linearize (play as fast as possible, while sequentializing tracking & mapping). otherwise, factor on timestamps.
+            bool preload = false;
+            bool useSampleOutput = false;
+            int mode = 0;
+            dso::FullSystem *fullSystem = 0;
+            ImageFolderReader *reader = 0;
 
 
-    private:
-        std::string calib = "";
-        std::string vignetteFile = "";
-        std::string gammaFile = "";
-        bool useSampleOutput = false;
-        dso::FullSystem *fullSystem = 0;
-        dso::Undistort *undistorter = 0;
-        int frameID = 0;
-    };
+        };
 
+
+        class VO_Pipeline_Live {
+        public:
+            VO_Pipeline_Live(char **argv, int argc);
+
+            ~VO_Pipeline_Live();
+
+            void parseArgument(char *arg);
+
+            void lanchLive(int index);
+
+
+        private:
+            std::string calib = "";
+            std::string vignetteFile = "";
+            std::string gammaFile = "";
+            bool useSampleOutput = false;
+            dso::FullSystem *fullSystem = 0;
+            dso::Undistort *undistorter = 0;
+            int frameID = 0;
+        };
+
+    }
 }
 #endif //BORIS_SYSTEM_BRAIN_VO_PIPELINE_H
