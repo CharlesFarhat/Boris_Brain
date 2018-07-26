@@ -1,7 +1,7 @@
 ./BorisBrain \
-files=sequence_18/images/ \
-calib=sequence_18/camera.txt \
-gamma=sequence_18/pcalib.txt \
-vignette=sequence_18/vignette.png \
+files=sequence_29/images/ \
+calib=sequence_29/camera.txt \
+gamma=sequence_29/pcalib.txt \
+vignette=sequence_29/vignette.png \
 preset=0 \
 mode=0

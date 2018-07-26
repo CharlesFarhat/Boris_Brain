@@ -1,4 +1,4 @@
-/*
+/**
  *
  * ____             _        _____           _
  *|  _ \           (_)      / ____|         | |
@@ -13,7 +13,7 @@
 */
 
 
-/*
+/**
  * Main entry of the system.
  * Launching SVO, REMODE and the PCl to server thread.
  * getting video feed and then sending to SVO
@@ -643,7 +643,7 @@ VO_Pipeline_dataset::~VO_Pipeline_dataset()
             cv::Mat imgRGB;
             tmpImg.convertTo(imgRGB, CV_8UC1);
             cv::Mat img;
-            cv::cvtColor(imgRGB, img, CV_BGR2GRAY);
+            cv::cvtColor(imgRGB, img, cv::COLOR_BGR2GRAY);
 
             assert(img.type() == CV_8U);
             assert(img.channels() == 1);
@@ -674,6 +674,7 @@ VO_Pipeline_dataset::~VO_Pipeline_dataset()
 
 
     VO_Pipeline_Live::~VO_Pipeline_Live() {
+
         for (IOWrap::Output3DWrapper *ow : fullSystem->outputWrapper) {
             ow->join();
             delete ow;

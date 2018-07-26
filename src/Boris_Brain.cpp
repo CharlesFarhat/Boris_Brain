@@ -26,6 +26,7 @@
 #include <unistd.h>
 
 #include "EnvProcessing/VisualOdometry/VO_Pipeline_Live.h"
+#include "utils/CLI11.hpp"
 
 #include <iostream>
 #include <boost/lexical_cast.hpp>
@@ -34,7 +35,10 @@
 using namespace std;
 using namespace dso;
 
-bool dataset = true;
+struct Settings{
+    int runningDSOLive;             /// Are you willing to launch a dataset ?
+    int cameraindex;                /// Camera To use
+};
 
 
 void my_exit_handler(int s)
@@ -58,6 +62,18 @@ void exitThread()
 
 int main(int argc, char* argv[])
 {
+    CLI::App app("Boris Brain system");
+
+    Settings run_settings;
+    run_settings.runningDSOLive = 1;
+    run_settings.cameraindex = 0;
+
+
+    app.add_option("-c, --cameraIndex", run_settings.cameraindex, "camera index to use", true);
+    app.add_option("-d, --dataset", run_settings.runningDSOLive, "Are you launching live or using the dataset ?", true);
+
+    CLI11_PARSE(app, argc, argv);
+
     cout << "Launching Boris brain System, if problem please contact me @ charles.farhat@free.fr" << endl;
 
     // hook crtl+C.
@@ -67,15 +83,16 @@ int main(int argc, char* argv[])
     // TODO : launch REMODE thread to compute High density map
 
 
-    if (dataset)
+    if (!run_settings.runningDSOLive)
     {
         dso::VO_Pipeline_dataset datasetDSO(argv, argc);
         datasetDSO.launch_VO_Dataset();
     }
     else
     {
-        // Get Video Feed :
-        int cameraNumber(0);
+        // Get Video Feed :*
+        // TODO: Create a class VideoStream
+        int cameraNumber(run_settings.cameraindex);
         std::cout << "Camera used is : " <<cameraNumber << std::endl;
         cv::VideoCapture cap(cameraNumber);
         if(!cap.isOpened())
