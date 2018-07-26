@@ -34,7 +34,7 @@
 
 #include <boost/thread.hpp>
 
-using namespace dso;
+using namespace Boris_Brain::dso;
 
 
 

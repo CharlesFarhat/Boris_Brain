@@ -27,17 +27,120 @@
 #include <unistd.h>
 
 using namespace std;
-using namespace dso;
+using namespace Boris_Brain::dso;
 
 namespace Boris_Brain {
     namespace dso {
 
-        VO_Pipeline_dataset::VO_Pipeline_dataset(char **argv, int argc) {
-            for (int i(1); i < argc; i++) {
-                parseArgument(argv[i]);
-            }
-        }
+        VO_Pipeline_dataset::VO_Pipeline_dataset(Settings *run_settings) {
 
+                if (run_settings->sampleoutput == 1)
+                {
+                    useSampleOutput = true;
+                    printf("USING SAMPLE OUTPUT WRAPPER!\n");
+                }
+
+                if (run_settings->debugout_runquiet == 1) {
+                    setting_debugout_runquiet = true;
+                    printf("QUIET MODE, I'll shut up!\n");
+                }
+
+                settingsDefault(run_settings->optionPreset);
+
+                if (run_settings->disableReconfigure == 0) {
+                    disableReconfigure = true;
+                    printf("DISABLE RECONFIGURE!\n");
+                }
+
+                if (run_settings->setting_logStuff == 1) {
+                    setting_logStuff = false;
+                    printf("DISABLE LOGGING!\n");
+                }
+
+                if (run_settings->reverse == 1) {
+                    reverse = true;
+                    printf("REVERSE!\n");
+                }
+
+                if (run_settings->disableAllDisplay == 1) {
+                    disableAllDisplay = true;
+                    printf("NO GUI!\n");
+                }
+
+                if (run_settings->multiThreading == 1) {
+                    multiThreading = false;
+                    printf("NO MultiThreading!\n");
+                }
+
+                if (run_settings->prefetch == 1) {
+                    prefetch = true;
+                    printf("PREFETCH!\n");
+                }
+
+                start = run_settings->start;
+                printf("START AT %d!\n", start);
+
+
+
+                end = run_settings->end;
+                printf("END AT %d!\n", end);
+
+
+                source = run_settings->source;
+                printf("loading data from %s!\n", source.c_str());
+
+                calib = run_settings->calib;
+                printf("loading calibration from %s!\n", calib.c_str());
+
+                vignette = run_settings->vignette;
+                printf("loading vignette from %s!\n", vignette.c_str());
+
+
+                gammaCalib = run_settings->gammaCalib;
+                printf("loading gammaCalib from %s!\n", gammaCalib.c_str());
+
+
+                rescale = run_settings->rescale;
+                printf("RESCALE %f!\n", rescale);
+
+                playbackSpeed = run_settings->playbackSpeed;
+                printf("PLAYBACK SPEED %f!\n", playbackSpeed);
+
+
+            if (run_settings->debugSaveImages == 1) {
+                    debugSaveImages = true;
+                    if (42 == system("rm -rf images_out"))
+                        printf("system call returned 42 - what are the odds?. This is only here to shut up the compiler.\n");
+                    if (42 == system("mkdir images_out"))
+                        printf("system call returned 42 - what are the odds?. This is only here to shut up the compiler.\n");
+                    if (42 == system("rm -rf images_out"))
+                        printf("system call returned 42 - what are the odds?. This is only here to shut up the compiler.\n");
+                    if (42 == system("mkdir images_out"))
+                        printf("system call returned 42 - what are the odds?. This is only here to shut up the compiler.\n");
+                    printf("SAVE IMAGES!\n");
+                }
+
+                mode = run_settings->mode;
+                if (run_settings->mode == 0) {
+                    printf("PHOTOMETRIC MODE WITH CALIBRATION!\n");
+                }
+                if (run_settings->mode == 1) {
+                    printf("PHOTOMETRIC MODE WITHOUT CALIBRATION!\n");
+                    setting_photometricCalibration = 0;
+                    setting_affineOptModeA = 0; //-1: fix. >=0: optimize (with prior, if > 0).
+                    setting_affineOptModeB = 0; //-1: fix. >=0: optimize (with prior, if > 0).
+                }
+                if (run_settings->mode == 2) {
+                    printf("PHOTOMETRIC MODE WITH PERFECT IMAGES!\n");
+                    setting_photometricCalibration = 0;
+                    setting_affineOptModeA = -1; //-1: fix. >=0: optimize (with prior, if > 0).
+                    setting_affineOptModeB = -1; //-1: fix. >=0: optimize (with prior, if > 0).
+                    setting_minGradHistAdd = 3;
+                }
+
+            printf("could parse argument !!!!");
+
+        }
 
         void VO_Pipeline_dataset::settingsDefault(int preset) {
             printf("\n=============== PRESET Settings: ===============\n");
@@ -87,164 +190,6 @@ namespace Boris_Brain {
             printf("==============================================\n");
         }
 
-        void VO_Pipeline_dataset::parseArgument(char *arg) {
-            int option;
-            float foption;
-            char buf[1000];
-
-
-            if (1 == sscanf(arg, "sampleoutput=%d", &option)) {
-                if (option == 1) {
-                    useSampleOutput = true;
-                    printf("USING SAMPLE OUTPUT WRAPPER!\n");
-                }
-                return;
-            }
-
-            if (1 == sscanf(arg, "quiet=%d", &option)) {
-                if (option == 1) {
-                    setting_debugout_runquiet = true;
-                    printf("QUIET MODE, I'll shut up!\n");
-                }
-                return;
-            }
-
-            if (1 == sscanf(arg, "preset=%d", &option)) {
-                settingsDefault(option);
-                return;
-            }
-
-
-            if (1 == sscanf(arg, "rec=%d", &option)) {
-                if (option == 0) {
-                    disableReconfigure = true;
-                    printf("DISABLE RECONFIGURE!\n");
-                }
-                return;
-            }
-
-            if (1 == sscanf(arg, "nolog=%d", &option)) {
-                if (option == 1) {
-                    setting_logStuff = false;
-                    printf("DISABLE LOGGING!\n");
-                }
-                return;
-            }
-            if (1 == sscanf(arg, "reverse=%d", &option)) {
-                if (option == 1) {
-                    reverse = true;
-                    printf("REVERSE!\n");
-                }
-                return;
-            }
-            if (1 == sscanf(arg, "nogui=%d", &option)) {
-                if (option == 1) {
-                    disableAllDisplay = true;
-                    printf("NO GUI!\n");
-                }
-                return;
-            }
-            if (1 == sscanf(arg, "nomt=%d", &option)) {
-                if (option == 1) {
-                    multiThreading = false;
-                    printf("NO MultiThreading!\n");
-                }
-                return;
-            }
-            if (1 == sscanf(arg, "prefetch=%d", &option)) {
-                if (option == 1) {
-                    prefetch = true;
-                    printf("PREFETCH!\n");
-                }
-                return;
-            }
-            if (1 == sscanf(arg, "start=%d", &option)) {
-                start = option;
-                printf("START AT %d!\n", start);
-                return;
-            }
-            if (1 == sscanf(arg, "end=%d", &option)) {
-                end = option;
-                printf("END AT %d!\n", start);
-                return;
-            }
-
-            if (1 == sscanf(arg, "files=%s", buf)) {
-                source = buf;
-                printf("loading data from %s!\n", source.c_str());
-                return;
-            }
-
-            if (1 == sscanf(arg, "calib=%s", buf)) {
-                calib = buf;
-                printf("loading calibration from %s!\n", calib.c_str());
-                return;
-            }
-
-            if (1 == sscanf(arg, "vignette=%s", buf)) {
-                vignette = buf;
-                printf("loading vignette from %s!\n", vignette.c_str());
-                return;
-            }
-
-            if (1 == sscanf(arg, "gamma=%s", buf)) {
-                gammaCalib = buf;
-                printf("loading gammaCalib from %s!\n", gammaCalib.c_str());
-                return;
-            }
-
-            if (1 == sscanf(arg, "rescale=%f", &foption)) {
-                rescale = foption;
-                printf("RESCALE %f!\n", rescale);
-                return;
-            }
-
-            if (1 == sscanf(arg, "speed=%f", &foption)) {
-                playbackSpeed = foption;
-                printf("PLAYBACK SPEED %f!\n", playbackSpeed);
-                return;
-            }
-
-            if (1 == sscanf(arg, "save=%d", &option)) {
-                if (option == 1) {
-                    debugSaveImages = true;
-                    if (42 == system("rm -rf images_out"))
-                        printf("system call returned 42 - what are the odds?. This is only here to shut up the compiler.\n");
-                    if (42 == system("mkdir images_out"))
-                        printf("system call returned 42 - what are the odds?. This is only here to shut up the compiler.\n");
-                    if (42 == system("rm -rf images_out"))
-                        printf("system call returned 42 - what are the odds?. This is only here to shut up the compiler.\n");
-                    if (42 == system("mkdir images_out"))
-                        printf("system call returned 42 - what are the odds?. This is only here to shut up the compiler.\n");
-                    printf("SAVE IMAGES!\n");
-                }
-                return;
-            }
-
-            if (1 == sscanf(arg, "mode=%d", &option)) {
-
-                mode = option;
-                if (option == 0) {
-                    printf("PHOTOMETRIC MODE WITH CALIBRATION!\n");
-                }
-                if (option == 1) {
-                    printf("PHOTOMETRIC MODE WITHOUT CALIBRATION!\n");
-                    setting_photometricCalibration = 0;
-                    setting_affineOptModeA = 0; //-1: fix. >=0: optimize (with prior, if > 0).
-                    setting_affineOptModeB = 0; //-1: fix. >=0: optimize (with prior, if > 0).
-                }
-                if (option == 2) {
-                    printf("PHOTOMETRIC MODE WITH PERFECT IMAGES!\n");
-                    setting_photometricCalibration = 0;
-                    setting_affineOptModeA = -1; //-1: fix. >=0: optimize (with prior, if > 0).
-                    setting_affineOptModeB = -1; //-1: fix. >=0: optimize (with prior, if > 0).
-                    setting_minGradHistAdd = 3;
-                }
-                return;
-            }
-
-            printf("could not parse argument \"%s\"!!!!\n", arg);
-        }
 
 
         void VO_Pipeline_dataset::launch_VO_Dataset() {
@@ -448,8 +393,6 @@ namespace Boris_Brain {
 
             printf("DELETE READER!\n");
             delete reader;
-
-
         }
 
 
@@ -464,76 +407,50 @@ namespace Boris_Brain {
 /******************************************************************************************************************************************/
 /******************************************************************************************************************************************/
 
-        VO_Pipeline_Live::VO_Pipeline_Live(char **argv, int argc) {
-            for (int i(1); i < argc; i++) {
-                parseArgument(argv[i]);
+        VO_Pipeline_Live::VO_Pipeline_Live(Settings *run_settings)
+        {
+
+            if (run_settings->sampleoutput == 1)
+            {
+                useSampleOutput = true;
+                printf("USING SAMPLE OUTPUT WRAPPER!\n");
             }
+
+            if (run_settings->debugout_runquiet == 1) {
+                setting_debugout_runquiet = true;
+                printf("QUIET MODE, I'll shut up!\n");
+            }
+
+            if (run_settings->setting_logStuff == 1) {
+                setting_logStuff = false;
+                printf("DISABLE LOGGING!\n");
+            }
+
+            if (run_settings->disableAllDisplay == 1) {
+                disableAllDisplay = true;
+                printf("NO GUI!\n");
+            }
+
+            if (run_settings->multiThreading == 1) {
+                multiThreading = false;
+                printf("NO MultiThreading!\n");
+            }
+
+
+            calib = run_settings->calib;
+            printf("loading calibration from %s!\n", calib.c_str());
+
+            vignetteFile = run_settings->vignette;
+            printf("loading vignette from %s!\n", vignetteFile.c_str());
+
+
+            gammaFile = run_settings->gammaCalib;
+            printf("loading gammaCalib from %s!\n", gammaFile.c_str());
+
+            printf("could parse argument !!!!");
+
 
         }
-
-        void VO_Pipeline_Live::parseArgument(char *arg) {
-            int option;
-            char buf[1000];
-
-            if (1 == sscanf(arg, "sampleoutput=%d", &option)) {
-                if (option == 1) {
-                    useSampleOutput = true;
-                    printf("USING SAMPLE OUTPUT WRAPPER!\n");
-                }
-                return;
-            }
-
-            if (1 == sscanf(arg, "quiet=%d", &option)) {
-                if (option == 1) {
-                    setting_debugout_runquiet = true;
-                    printf("QUIET MODE, I'll shut up!\n");
-                }
-                return;
-            }
-
-
-            if (1 == sscanf(arg, "nolog=%d", &option)) {
-                if (option == 1) {
-                    setting_logStuff = false;
-                    printf("DISABLE LOGGING!\n");
-                }
-                return;
-            }
-
-            if (1 == sscanf(arg, "nogui=%d", &option)) {
-                if (option == 1) {
-                    disableAllDisplay = true;
-                    printf("NO GUI!\n");
-                }
-                return;
-            }
-            if (1 == sscanf(arg, "nomt=%d", &option)) {
-                if (option == 1) {
-                    multiThreading = false;
-                    printf("NO MultiThreading!\n");
-                }
-                return;
-            }
-            if (1 == sscanf(arg, "calib=%s", buf)) {
-                calib = buf;
-                printf("loading calibration from %s!\n", calib.c_str());
-                return;
-            }
-            if (1 == sscanf(arg, "vignette=%s", buf)) {
-                vignetteFile = buf;
-                printf("loading vignette from %s!\n", vignetteFile.c_str());
-                return;
-            }
-
-            if (1 == sscanf(arg, "gamma=%s", buf)) {
-                gammaFile = buf;
-                printf("loading gammaCalib from %s!\n", gammaFile.c_str());
-                return;
-            }
-
-            printf("could not parse argument \"%s\"!!\n", arg);
-        }
-
 
         void VO_Pipeline_Live::lanchLive(int index) {
             setting_desiredImmatureDensity = 1000;

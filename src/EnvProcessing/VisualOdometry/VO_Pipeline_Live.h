@@ -39,17 +39,16 @@
 #include "EnvProcessing/VisualOdometry/FullSystem/PixelSelector2.h"
 #include "utils/globalCalib.h"
 #include "utils/videoStream.h"
+#include "Boris_System_Setup.h"
 
 namespace Boris_Brain {
     namespace dso {
 
         class VO_Pipeline_dataset {
         public:
-            VO_Pipeline_dataset(char **argv, int argc);
+            VO_Pipeline_dataset(Settings *run_settings);
 
             ~VO_Pipeline_dataset();
-
-            void parseArgument(char *arg);
 
             void settingsDefault(int preset);
 
@@ -78,11 +77,9 @@ namespace Boris_Brain {
 
         class VO_Pipeline_Live {
         public:
-            VO_Pipeline_Live(char **argv, int argc);
+            VO_Pipeline_Live(Settings *run_settings);
 
             ~VO_Pipeline_Live();
-
-            void parseArgument(char *arg);
 
             void lanchLive(int index);
 

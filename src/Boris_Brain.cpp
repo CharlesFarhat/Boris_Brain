@@ -26,6 +26,7 @@
 #include <unistd.h>
 
 #include "EnvProcessing/VisualOdometry/VO_Pipeline_Live.h"
+#include "Boris_System_Setup.h"
 #include "utils/CLI11.hpp"
 
 #include <iostream>
@@ -33,18 +34,7 @@
 #include <opencv2/opencv.hpp>
 
 using namespace std;
-using namespace dso;
-
-namespace Boris_Brain
-{
-    struct Settings{
-        int runningDSOLive;             /// Are you willing to launch a dataset ?
-        int cameraindex;                /// Camera To use
-    };
-}
-
-
-
+using namespace Boris_Brain::dso;
 
 void my_exit_handler(int s)
 {
@@ -72,10 +62,56 @@ int main(int argc, char* argv[])
     Boris_Brain::Settings run_settings;
     run_settings.runningDSOLive = 1;
     run_settings.cameraindex = 0;
+    run_settings.sampleoutput= 0;
+    run_settings.debugout_runquiet = 0;
+    run_settings.optionPreset = 0;
+    run_settings.disableReconfigure = 1;
+    run_settings.setting_logStuff = 0;
+    run_settings.reverse = 0;
+    run_settings.disableAllDisplay = 0;
+    run_settings.multiThreading = 0;
+    run_settings.prefetch = 0;
+    run_settings.start = 0;
+    run_settings.end = 100000;
+    run_settings.source = "nope";
+    run_settings.calib = "nope";
+    run_settings.vignette = "nope";
+    run_settings.gammaCalib = "nope";
+    run_settings.vignette = "nope";
+    run_settings.rescale = 1;
+    run_settings.playbackSpeed = 0;
+    run_settings.debugSaveImages = 0;
+    run_settings.mode = 0;
+
 
 
     app.add_option("-c, --cameraIndex", run_settings.cameraindex, "camera index to use", true);
-    app.add_option("-d, --dataset", run_settings.runningDSOLive, "Are you launching live or using the dataset ?", true);
+    app.add_option("-l, --runningLive", run_settings.runningDSOLive, "Are you launching live or using the dataset ?", true);
+    app.add_option("-o, --sampleoutput", run_settings.sampleoutput, "use sample output", true);
+    app.add_option("-f, --files", run_settings.source, "if you are using dataset MANDATORY !", true);
+
+
+    app.add_option("-q, --quiet", run_settings.debugout_runquiet, "", true);
+    app.add_option("-p, --preset", run_settings.optionPreset, "", true);
+    app.add_option("-r, --reconfigure", run_settings.disableReconfigure, "", true);
+    app.add_option("--nolog", run_settings.setting_logStuff, "", true);
+    app.add_option("--reverse", run_settings.reverse, "", true);
+    app.add_option("--nogui", run_settings.disableAllDisplay, "", true);
+    app.add_option("--nomt", run_settings.multiThreading, "", true);
+    app.add_option("--prefetch", run_settings.prefetch, "", true);
+    app.add_option("--start", run_settings.start, "", true);
+    app.add_option("--end", run_settings.end, "", true);
+    app.add_option("--rescale", run_settings.rescale, "", true);
+    app.add_option("--speed", run_settings.playbackSpeed, "", true);
+    app.add_option("--save", run_settings.debugSaveImages, "", true);
+    app.add_option("-m, --mode", run_settings.mode, "", true);
+
+    app.add_option("calib=", run_settings.calib, "", true);
+    app.add_option("gamma=", run_settings.gammaCalib, "", true);
+    app.add_option("vignette=", run_settings.vignette, "", true);
+
+
+
 
     CLI11_PARSE(app, argc, argv);
 
@@ -93,12 +129,12 @@ int main(int argc, char* argv[])
         // Get Video Feed :
         cout << "launching the Direct sparse visual odometry system" << endl;
 
-        dso::VO_Pipeline_Live liveDSO(argv, argc);
+        Boris_Brain::dso::VO_Pipeline_Live liveDSO(&run_settings);
         liveDSO.lanchLive(run_settings.cameraindex);
     }
     else if (!run_settings.runningDSOLive)
     {
-        dso::VO_Pipeline_dataset datasetDSO(argv, argc);
+        Boris_Brain::dso::VO_Pipeline_dataset datasetDSO(&run_settings);
         datasetDSO.launch_VO_Dataset();
     }
     else
