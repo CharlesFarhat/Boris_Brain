@@ -54,7 +54,6 @@ void exitThread()
 }
 
 
-
 int main(int argc, char* argv[])
 {
     CLI::App app("Boris Brain system");
@@ -117,7 +116,7 @@ int main(int argc, char* argv[])
 
     cout << "Launching Boris brain System, if problem please contact me @ charles200000@maclg.net" << endl;
 
-    // hook crtl+C.
+    // hook crtl+C TODO : haddle user input
     boost::thread exThread = boost::thread(exitThread);
 
     // TODO : launch Point cloud data stream in another thread
@@ -126,7 +125,6 @@ int main(int argc, char* argv[])
 
     if (run_settings.runningDSOLive)
     {
-        // Get Video Feed :
         cout << "launching the Direct sparse visual odometry system" << endl;
 
         Boris_Brain::dso::VO_Pipeline_Live liveDSO(&run_settings);
@@ -139,7 +137,7 @@ int main(int argc, char* argv[])
     }
     else
     {
-        printf("insuffisent args !");
+        printf("insufficient args !");
         exit(0);
     }
 

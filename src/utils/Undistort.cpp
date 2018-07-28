@@ -236,7 +236,7 @@ namespace Boris_Brain {
 				f.close();
 				printf(" ... not found. Cannot operate without calibration, shutting down.\n");
 				f.close();
-				return 0;
+				exit(0);
 			}
 
 			printf(" ... found!\n");
