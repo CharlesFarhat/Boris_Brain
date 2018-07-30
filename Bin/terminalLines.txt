@@ -1,1 +1,1 @@
-./BorisBrain -l 0 -p 0 -m 0 -f sequence_29/images/ sequence_29/camera.txt sequence_29/pcalib.txt sequence_29/vignette.png
+./BorisBrain -l 0 -p 0 -m 0 -f sequence_666/images/ sequence_666/camera.txt sequence_29/pcalib.txt sequence_29/vignette.png

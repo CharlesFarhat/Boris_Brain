@@ -138,7 +138,7 @@ namespace Boris_Brain {
                     setting_minGradHistAdd = 3;
                 }
 
-            printf("could parse argument !!!!");
+            printf("could parse argument !!!! \n");
 
         }
 
