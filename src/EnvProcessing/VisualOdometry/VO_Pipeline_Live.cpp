@@ -493,7 +493,7 @@ namespace Boris_Brain {
 
 
             // Start openCV cameraStream
-            videoStream stream(0, true, true);
+            videoStream stream("/dev/video0", true);
 
             while (true) {
 

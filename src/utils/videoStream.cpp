@@ -14,10 +14,14 @@
 
 #include "videoStream.h"
 
+using namespace API_MGN;
+
 namespace Boris_Brain
 {
-    videoStream::videoStream(int camIndex, bool useHack = false, bool UseGray = false) : useOnlyGrayValues(UseGray)
+    videoStream::videoStream(char* devPath, bool UseGray = false) : useOnlyGrayValues(UseGray)
     {
+        /* generic way :
+
         videocaptureStream = new cv::VideoCapture();
         videocaptureStream->open(camIndex);
         videocaptureStream->set(CV_CAP_PROP_FRAME_WIDTH, 1280);
@@ -36,6 +40,36 @@ namespace Boris_Brain
             cv::Mat image;
             videocaptureStream->read(image);
         }
+         */
+
+        myCam = new API_MGN::Camera(devPath);
+        /* USB 3.0 */
+        /* 8-bit Greyscale 1280 x 720 60 fps */
+        myCam->set_format(1280, 720, API_MGN::fourcc_to_pixformat('G','R','E','Y'), 1, 60);
+
+        /* 8-bit Greyscale 1280 x 960 45 fps */
+        //camera.set_format(1280, 960, Withrobot::fourcc_to_pixformat('G','R','E','Y'), 1, 45);
+
+        /* 8-bit Greyscale 320 x 240 160 fps */
+        //camera.set_format(320, 240, Withrobot::fourcc_to_pixformat('G','R','E','Y'), 1, 160);
+
+        /* 8-bit Greyscale 640 x 480 80 fps */
+        //camera.set_format(640, 480, Withrobot::fourcc_to_pixformat('G','R','E','Y'), 1, 80);
+
+
+
+        /*
+        * get current camera format (image size and frame rate)
+        */
+        camFormat = new API_MGN::camera_format;
+        myCam->get_current_format(*camFormat);
+
+       if (!myCam->start()) {
+            perror("Failed to start. camera");
+            exit(0);
+        }
+
+        cv::Mat srcImg(cv::Size(camFormat->width, camFormat->height), CV_8UC1);
     }
 
     cv::Mat videoStream::getImage()
@@ -47,41 +81,51 @@ namespace Boris_Brain
         }
         else
         {
-            videocaptureStream->read(image);
-            if (image.empty()) {
-                std::cout
-                        << "Img read is empty !!! Stream is not fonctionning well please check if your cam is recording (check your cables !!!"
-                        << std::endl;
-                exit(0);
+            /* Copy a single frame(image) from camera(oCam-1MGN). This is a blocking function. */
+            int size = myCam->get_frame(srcImg.data, camFormat->image_size, 1);
+
+            /* If the error occured, restart the camera. */
+            if (size == -1) {
+                printf("error number: %d\n", errno);
+                perror("Cannot get image from camera");
+                myCam->stop();
+                myCam->start();
             }
-            return image;
+            return srcImg;
         }
     }
 
     cv::Mat videoStream::GrayImages()
     {
-        videocaptureStream->read(image);
-        image.convertTo(image, CV_8UC1);
-        cv::cvtColor(image, image, cv::COLOR_RGB2GRAY);
+        /* Copy a single frame(image) from camera(oCam-1MGN). This is a blocking function. */
+        int size = myCam->get_frame(srcImg.data, camFormat->image_size, 1);
 
-        assert(image.type() == CV_8U);
-        assert(image.channels() == 1);
-
-        if (image.empty()) {
-            std::cout
-                    << "Img read is empty !!! Stream is not fonctionning well please check if your cam is recording (check your cables !!!"
-                    << std::endl;
-            exit(0);
+        /* If the error occured, restart the camera. */
+        if (size == -1) {
+            printf("error number: %d\n", errno);
+            perror("Cannot get image from camera");
+            myCam->stop();
+            myCam->start();
         }
+        srcImg.convertTo(srcImg, CV_8UC1);
+        cv::cvtColor(srcImg, srcImg, cv::COLOR_RGB2GRAY);
 
-        return image;
+        assert(srcImg.type() == CV_8UC1);
+        assert(srcImg.channels() == 1);
+
+        return srcImg;
     }
 
     videoStream::~videoStream()
     {
-        delete videocaptureStream;
-        videocaptureStream->release();
-        std::cout << "closing opencvStream !!" << std::endl;
+        /*
+     * Stop streaming
+     */
+        myCam->stop();
+
+        delete myCam;
+        delete camFormat;
+        std::cout << "closing camera stream !!" << std::endl;
     }
 }
 

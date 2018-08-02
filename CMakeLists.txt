@@ -16,7 +16,7 @@ set(VERSION_PATCH 1)
 # Compilation Flags
 add_definitions("-DENABLE_SSE")
 set(CMAKE_CXX_FLAGS
-        "${SSE_FLAGS} -O3 -g -std=c++0x -march=native"
+        "${SSE_FLAGS} -O3 -g -std=c++11 -march=native"
         #   "${SSE_FLAGS} -O3 -g -std=c++0x -fno-omit-frame-pointer"
         )
 if (MSVC)
@@ -41,15 +41,11 @@ find_package(SuiteParse REQUIRED)
 FIND_PACKAGE(Boost REQUIRED COMPONENTS thread system)
 find_package(Pangolin 0.2 QUIET)
 FIND_PACKAGE(yaml-cpp REQUIRED)
-
-
-message(STATUS "All default dependencies ready to go !")
-
 # Boris_Utils used to get some maths and mainly technical stuff
-#FIND_PACKAGE(Boris_Utils REQUIRED)
+FIND_PACKAGE(Boris_Utils REQUIRED)
 
-#message(STATUS "Boris utils found and ready to go !")
-
+message(STATUS "Boris utils found and ready to go !")
+message(STATUS "All default dependencies ready to go !")
 
 
 # Include dirs
@@ -59,7 +55,7 @@ INCLUDE_DIRECTORIES(
         ${OpenCV_INCLUDE_DIRS}
         ${PROJECT_SOURCE_DIR}/ThirdParty/Sophus
         ${Boost_INCLUDE_DIRS}
-        #${Boris_Utils_INCLUDE_DIRS}
+        ${Boris_Utils_INCLUDE_DIRS}
         ${YAML_CPP_INCLUDEDIR}
         ${PROJECT_SOURCE_DIR}/ThirdParty/sse2neon
 )
@@ -92,9 +88,9 @@ LIST(APPEND SOURCEFILES
 
 # Set link libraries
 LIST(APPEND LINK_LIBS
+        ${Boris_Utils_LIBRARIES}
         ${OpenCV_LIBS}
         ${Boost_LIBRARIES}
-        #${Boris_Utils_LIBRARIES}
         ${YAML_CPP_LIBRARIES}
         )
 

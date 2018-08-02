@@ -16,6 +16,7 @@
 #define ONLINE_PHOTOMETRIC_CALIBRATION_VIDEOSTREAM_H
 
 #include <opencv2/opencv.hpp>
+#include "CamerasAPI/MGN-U/API-MGN_camera.hpp"
 
 namespace Boris_Brain
 {
@@ -23,7 +24,7 @@ namespace Boris_Brain
     class videoStream
     {
     public:
-        videoStream(int camIndex, bool useHack, bool UseGray);
+        videoStream(char* devPath, bool UseGray);
         ~videoStream();
 
         cv::Mat getImage();
@@ -32,9 +33,12 @@ namespace Boris_Brain
 
         cv::Mat GrayImages();
 
-        cv::VideoCapture* videocaptureStream;
+
+        API_MGN::Camera* myCam = 0;
+        API_MGN::camera_format* camFormat= 0;
+        //cv::VideoCapture* videocaptureStream;
         bool useOnlyGrayValues;    /// this will convert any value into gray scalars
-        cv::Mat image;
+        cv::Mat srcImg;
 
 
     };
