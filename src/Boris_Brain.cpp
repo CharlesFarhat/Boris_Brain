@@ -104,9 +104,9 @@ int main(int argc, char* argv[])
     app.add_option("--speed", run_settings.playbackSpeed, "", true);
     app.add_option("--save", run_settings.debugSaveImages, "", true);
     app.add_option("-m, --mode", run_settings.mode, "", true);
+    app.add_option("-g, --gamma", run_settings.gammaCalib, "", true);
 
     app.add_option("calib=", run_settings.calib, "", true);
-    app.add_option("gamma=", run_settings.gammaCalib, "", true);
     app.add_option("vignette=", run_settings.vignette, "", true);
 
 

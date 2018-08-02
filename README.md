@@ -14,52 +14,23 @@ In order to run the system you need Both the **Boris Utils** and the **Boris Ser
 
 ### Default dependencies :
 
-Obviously GCC !
- 
- #### Cmake
-	sudo apt-get install cmake
-    
-#### Boost - c++ Librairies (thread and system are needed)
+### Boris Utils :
+**CRITICAL**
+You need to first build boris utils system !!!
+All dependencies are explained in the boris utils repo :
 
-	sudo apt-get install libboost-all-dev
+See : https://github.com/charles200000/Boris_Utils
 
-#### Eigen 3 - Linear algebra
-
-    apt-get install libeigen3-dev
-
-#### CUDA 9.1
-Follow the instructions at https://developer.nvidia.com/cuda-downloads
-
-#### OpenCV - Computer vision library for loading and displaying images
-You can install with apt :
-```
-sudo apt-get install libopencv-dev
-```
-**BUT** in order to use it with Boris
-It is recommended to custom build OpenCV with CUDA and Qt support !
-
-> To do soo :
-> https://docs.opencv.org/3.3.1/d7/d9f/tutorial_linux_install.html
-> and for jetson : https://docs.opencv.org/master/d6/d15/tutorial_building_tegra_cuda.html update it with cuda 9.0
-> !!!be ready to spend some time on nvidia forums, lot's of errors and on jetson tx2 you actually need a patch in order to make it run !!
-> Finally you need to add `-DWITH_QT` when you cmake it :)
-
- 
-#### CuDNN (last version available)
-To be found at https://developer.nvidia.com/cudnn
-
- #### The PCl library :
+#### The PCl library :
 
 Please see how to build it here : 
 http://pointclouds.org/documentation/tutorials/compiling_pcl_posix.php
 
-### Boris Utils :
-**CRITICAL**
-You need to first build boris utils system !!!
+> you will need VTK as well :)
 
-See : https://github.com/charles200000/Boris_Utils
 
-##### At the end you should have Boris Utils, Sophus, fast, OpenCV (With CUDA, QT support), CuDNN, The PCL, Boost, Eigen working.
+
+##### At the end you should have Boris Utils, Sophus, OpenCV (With CUDA), CuDNN, The PCL, Boost, Eigen working.
 ####  yeah you're over !! Hope it didn't took you 3 weeks ;)
 
 # Building

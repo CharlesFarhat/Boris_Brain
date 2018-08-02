@@ -20,6 +20,8 @@ namespace Boris_Brain
     {
         videocaptureStream = new cv::VideoCapture();
         videocaptureStream->open(camIndex);
+        videocaptureStream->set(CV_CAP_PROP_FRAME_WIDTH, 1280);
+        videocaptureStream->set(CV_CAP_PROP_FRAME_HEIGHT, 960);
         if(!videocaptureStream->isOpened()) {
             std::cout << "Camera not supported / camera not working !" << std::endl;
             exit(0);

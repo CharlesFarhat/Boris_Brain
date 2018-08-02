@@ -71,7 +71,7 @@ namespace Boris_Brain {
 				printf("START PANGOLIN!\n");
 
 				pangolin::CreateWindowAndBind("Main", 2 * w, 2 * h);
-				const int UI_WIDTH = 180;
+				const int UI_WIDTH = 120;
 
 				glEnable(GL_DEPTH_TEST);
 
@@ -87,10 +87,9 @@ namespace Boris_Brain {
 
 
 				// 3 images
+                pangolin::View &d_video = pangolin::Display("imgVideo")
+                        .SetAspect(w / (float) h);
 				pangolin::View &d_kfDepth = pangolin::Display("imgKFDepth")
-						.SetAspect(w / (float) h);
-
-				pangolin::View &d_video = pangolin::Display("imgVideo")
 						.SetAspect(w / (float) h);
 
 				pangolin::View &d_residual = pangolin::Display("imgResidual")
@@ -104,12 +103,12 @@ namespace Boris_Brain {
 				pangolin::CreateDisplay()
 						.SetBounds(0.0, 0.3, pangolin::Attach::Pix(UI_WIDTH), 1.0)
 						.SetLayout(pangolin::LayoutEqual)
+                        .AddDisplay(d_video)
 						.AddDisplay(d_kfDepth)
-						.AddDisplay(d_video)
 						.AddDisplay(d_residual);
 
 				// parameter reconfigure gui
-				pangolin::CreatePanel("ui").SetBounds(0.0, 1.0, 0.0, pangolin::Attach::Pix(UI_WIDTH));
+				//pangolin::CreatePanel("ui").SetBounds(0.0, 1.0, 0.0, pangolin::Attach::Pix(UI_WIDTH));
 
 				pangolin::Var<int> settings_pointCloudMode("ui.PC_mode", 1, 1, 4, false);
 
@@ -117,12 +116,12 @@ namespace Boris_Brain {
 				pangolin::Var<bool> settings_showCurrentCamera("ui.CurrCam", true, true);
 				pangolin::Var<bool> settings_showTrajectory("ui.Trajectory", true, true);
 				pangolin::Var<bool> settings_showFullTrajectory("ui.FullTrajectory", false, true);
-				pangolin::Var<bool> settings_showActiveConstraints("ui.ActiveConst", true, true);
+				pangolin::Var<bool> settings_showActiveConstraints("ui.ActiveConst", false, true);
 				pangolin::Var<bool> settings_showAllConstraints("ui.AllConst", false, true);
 
 
 				pangolin::Var<bool> settings_show3D("ui.show3D", true, true);
-				pangolin::Var<bool> settings_showLiveDepth("ui.showDepth", true, true);
+				pangolin::Var<bool> settings_showLiveDepth("ui.showDepth", false, true);
 				pangolin::Var<bool> settings_showLiveVideo("ui.showVideo", true, true);
 				pangolin::Var<bool> settings_showLiveResidual("ui.showResidual", false, true);
 
@@ -171,9 +170,13 @@ namespace Boris_Brain {
 															  this->settings_absVarTH,
 															  this->settings_pointCloudMode, this->settings_minRelBS,
 															  this->settings_sparsity));
-							fh->drawPC(1);
+							fh->drawPC(0.5);
 						}
-						if (this->settings_showCurrentCamera) currentCam->drawCam(2, 0, 0.2);
+						if (this->settings_showCurrentCamera)
+                        {
+                            float blue[3] = {0, 0, 1};
+                            currentCam->drawCam(1, blue, 0.1);
+                        }
 						drawConstraints();
 						lk3d.unlock();
 					}

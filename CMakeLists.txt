@@ -1,4 +1,4 @@
-SET(OpenCV_QT_Support TRUE)
+SET(OpenCV_QT_Support FALSE)
 
 cmake_minimum_required(VERSION 3.5)
 # Project
