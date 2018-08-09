@@ -38,8 +38,9 @@
 #include "EnvProcessing/VisualOdometry/OptimizationBackend/MatrixAccumulators.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/PixelSelector2.h"
 #include "utils/globalCalib.h"
-#include "utils/videoStream.h"
 #include "Boris_System_Setup.h"
+
+#include "CamerasAPI/videoStream.h"
 
 namespace Boris_Brain {
     namespace dso {

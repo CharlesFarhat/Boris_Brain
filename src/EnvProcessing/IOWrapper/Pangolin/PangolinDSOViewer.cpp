@@ -108,7 +108,7 @@ namespace Boris_Brain {
 						.AddDisplay(d_residual);
 
 				// parameter reconfigure gui
-				//pangolin::CreatePanel("ui").SetBounds(0.0, 1.0, 0.0, pangolin::Attach::Pix(UI_WIDTH));
+				pangolin::CreatePanel("ui").SetBounds(0.0, 1.0, 0.0, pangolin::Attach::Pix(UI_WIDTH));
 
 				pangolin::Var<int> settings_pointCloudMode("ui.PC_mode", 1, 1, 4, false);
 
