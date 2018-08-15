@@ -17,7 +17,7 @@
 #pragma once
 
  
-#include "utils/NumType.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/HessianBlocks.h"
 
 namespace Boris_Brain {

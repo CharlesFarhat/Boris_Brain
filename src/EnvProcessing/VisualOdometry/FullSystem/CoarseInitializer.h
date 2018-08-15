@@ -16,10 +16,10 @@
 
 #pragma once
 
-#include "utils/NumType.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
 #include "EnvProcessing/VisualOdometry/OptimizationBackend/MatrixAccumulators.h"
 #include "EnvProcessing/IOWrapper/Output3DWrapper.h"
-#include "utils/settings.h"
+#include "EnvProcessing/EP_Utils/settings.h"
 #include "vector"
 #include <math.h>
 

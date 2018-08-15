@@ -23,17 +23,17 @@
 #define MAX_ACTIVE_FRAMES 100
 
 #include <deque>
-#include "utils/NumType.h"
-#include "utils/globalCalib.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
+#include "EnvProcessing/EP_Utils/globalCalib.h"
 #include "vector"
  
 #include <iostream>
 #include <fstream>
-#include "utils/NumType.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/Residuals.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/HessianBlocks.h"
-#include "utils/FrameShell.h"
-#include "utils/IndexThreadReduce.h"
+#include "EnvProcessing/EP_Utils/FrameShell.h"
+#include "EnvProcessing/EP_Utils/IndexThreadReduce.h"
 #include "EnvProcessing/VisualOdometry/OptimizationBackend/EnergyFunctional.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/PixelSelector2.h"
 
@@ -174,8 +174,7 @@ namespace Boris_Brain {
 			// opt single point
 			int optimizePoint(PointHessian *point, int minObs, bool flagOOB);
 
-			PointHessian *
-			optimizeImmaturePoint(ImmaturePoint *point, int minObs, ImmaturePointTemporaryResidual *residuals);
+			PointHessian *optimizeImmaturePoint(ImmaturePoint *point, int minObs, ImmaturePointTemporaryResidual *residuals);
 
 			double linAllPointSinle(PointHessian *point, float outlierTHSlack, bool plot);
 

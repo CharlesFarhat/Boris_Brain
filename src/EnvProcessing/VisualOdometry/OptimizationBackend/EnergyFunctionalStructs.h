@@ -16,7 +16,7 @@
 #pragma once
 
  
-#include "utils/NumType.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
 #include "vector"
 #include <math.h>
 #include "EnvProcessing/VisualOdometry/OptimizationBackend/RawResidualJacobian.h"

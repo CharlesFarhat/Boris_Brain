@@ -15,8 +15,8 @@
 
 
 #pragma once
-#include "utils/NumType.h"
-#include "utils/MinimalImage.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
+#include "EnvProcessing/EP_Utils/MinimalImage.h"
 
 namespace Boris_Brain {
     namespace dso {

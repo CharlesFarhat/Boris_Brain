@@ -15,8 +15,8 @@
 #pragma once
 
  
-#include "utils/NumType.h"
-#include "utils/IndexThreadReduce.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
+#include "EnvProcessing/EP_Utils/IndexThreadReduce.h"
 #include "vector"
 #include <math.h>
 #include "map"

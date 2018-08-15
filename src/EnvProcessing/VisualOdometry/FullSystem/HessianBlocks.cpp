@@ -20,7 +20,7 @@
 
  
 #include "EnvProcessing/VisualOdometry/FullSystem/HessianBlocks.h"
-#include "utils/FrameShell.h"
+#include "EnvProcessing/EP_Utils/FrameShell.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/ImmaturePoint.h"
 #include "EnvProcessing/VisualOdometry/OptimizationBackend/EnergyFunctionalStructs.h"
 

@@ -15,7 +15,7 @@
 
 
 #include <stdio.h>
-#include "utils/settings.h"
+#include "EnvProcessing/EP_Utils/settings.h"
 
 //#include <GL/glx.h>
 //#include <GL/gl.h>
@@ -25,7 +25,7 @@
 #include "KeyFrameDisplay.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/HessianBlocks.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/ImmaturePoint.h"
-#include "utils/FrameShell.h"
+#include "EnvProcessing/EP_Utils/FrameShell.h"
 
 
 namespace Boris_Brain {

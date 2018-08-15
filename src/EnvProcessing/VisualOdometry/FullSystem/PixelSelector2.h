@@ -20,7 +20,7 @@
 
 #pragma once
  
-#include "utils/NumType.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
 
 namespace Boris_Brain {
 	namespace dso {

@@ -29,11 +29,11 @@
 #include "EnvProcessing/VisualOdometry/FullSystem/FullSystem.h"
  
 #include "stdio.h"
-#include "utils/globalFuncs.h"
+#include "EnvProcessing/EP_Utils/globalFuncs.h"
 #include <Eigen/LU>
 #include <algorithm>
 #include "EnvProcessing/IOWrapper/ImageDisplay.h"
-#include "utils/globalCalib.h"
+#include "EnvProcessing/EP_Utils/globalCalib.h"
 #include <Eigen/SVD>
 #include <Eigen/Eigenvalues>
 #include "EnvProcessing/VisualOdometry/FullSystem/PixelSelector.h"
@@ -49,7 +49,7 @@
 
 #include "EnvProcessing/IOWrapper/Output3DWrapper.h"
 
-#include "utils/ImageAndExposure.h"
+#include "EnvProcessing/EP_Utils/ImageAndExposure.h"
 
 #include <cmath>
 

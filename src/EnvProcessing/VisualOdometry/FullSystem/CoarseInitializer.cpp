@@ -30,7 +30,7 @@
 #include "EnvProcessing/VisualOdometry/FullSystem/Residuals.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/PixelSelector.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/PixelSelector2.h"
-#include "utils/nanoflann.h"
+#include "EnvProcessing/EP_Utils/nanoflann.h"
 
 
 #if !defined(__SSE3__) && !defined(__SSE2__) && !defined(__SSE1__)

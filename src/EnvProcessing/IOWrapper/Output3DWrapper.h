@@ -18,8 +18,8 @@
 #include <vector>
 #include <string>
 
-#include "utils/NumType.h"
-#include "utils/MinimalImage.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
+#include "EnvProcessing/EP_Utils/MinimalImage.h"
 #include "map"
 
 namespace cv {

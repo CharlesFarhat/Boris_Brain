@@ -16,7 +16,7 @@
 #pragma once
 #include <pangolin/pangolin.h>
 #include "boost/thread.hpp"
-#include "utils/MinimalImage.h"
+#include "EnvProcessing/EP_Utils/MinimalImage.h"
 #include "EnvProcessing/IOWrapper/Output3DWrapper.h"
 #include <map>
 #include <deque>

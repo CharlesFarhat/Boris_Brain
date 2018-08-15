@@ -22,14 +22,14 @@
 #define MAX_ACTIVE_FRAMES 100
 
 
-#include "utils/globalCalib.h"
+#include "EnvProcessing/EP_Utils/globalCalib.h"
 #include "vector"
  
 #include <iostream>
 #include <fstream>
-#include "utils/NumType.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/Residuals.h"
-#include "utils/ImageAndExposure.h"
+#include "EnvProcessing/EP_Utils/ImageAndExposure.h"
 
 namespace Boris_Brain {
 	namespace dso {

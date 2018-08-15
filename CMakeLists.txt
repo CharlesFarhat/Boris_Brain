@@ -77,12 +77,12 @@ LIST(APPEND SOURCEFILES
         src/EnvProcessing/VisualOdometry/OptimizationBackend/AccumulatedTopHessian.cpp
         src/EnvProcessing/VisualOdometry/OptimizationBackend/AccumulatedSCHessian.cpp
         src/EnvProcessing/VisualOdometry/OptimizationBackend/EnergyFunctionalStructs.cpp
-        src/utils/settings.cpp
-        src/utils/Undistort.cpp
-        src/utils/globalCalib.cpp
-        #src/utils/videoStream.cpp
+        src/EnvProcessing/EP_Utils/settings.cpp
+        src/EnvProcessing/EP_Utils/Undistort.cpp
+        src/EnvProcessing/EP_Utils/globalCalib.cpp
         src/EnvProcessing/IOWrapper/OpenCV/ImageDisplay_OpenCV.cpp
         src/EnvProcessing/IOWrapper/OpenCV/ImageRW_OpenCV.cpp
+        src/utils/UserInput_Server.cpp
         )
 
 

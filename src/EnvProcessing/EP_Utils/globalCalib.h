@@ -17,8 +17,8 @@
 
 
 #pragma once
-#include "utils/settings.h"
-#include "utils/NumType.h"
+#include "settings.h"
+#include "NumType.h"
 
 namespace Boris_Brain {
 

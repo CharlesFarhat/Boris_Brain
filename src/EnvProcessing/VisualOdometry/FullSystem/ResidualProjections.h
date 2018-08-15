@@ -21,10 +21,10 @@
 
 #pragma once
 
-#include "utils/NumType.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/FullSystem.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/HessianBlocks.h"
-#include "utils/settings.h"
+#include "EnvProcessing/EP_Utils/settings.h"
 
 
 

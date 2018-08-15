@@ -27,7 +27,7 @@
 
 
 
-#include "utils/settings.h"
+#include "settings.h"
 #include <boost/bind.hpp>
 
 namespace Boris_Brain {

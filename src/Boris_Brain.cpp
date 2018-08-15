@@ -120,7 +120,7 @@ int main(int argc, char* argv[])
     boost::thread exThread = boost::thread(exitThread);
 
     // TODO : launch Point cloud data stream in another thread
-    // TODO : launch REMODE thread to compute High density map
+
 
 
     if (run_settings.runningDSOLive)
@@ -140,6 +140,8 @@ int main(int argc, char* argv[])
         printf("insufficient args !");
         exit(0);
     }
+
+    // TODO : launch REMODE thread to compute High density map
 
     printf("System finished.\n");
     std::cout << "test over -----> from main system" << std::endl;

@@ -17,8 +17,8 @@
 #include "PangolinDSOViewer.h"
 #include "KeyFrameDisplay.h"
 
-#include "utils/settings.h"
-#include "utils/globalCalib.h"
+#include "EnvProcessing/EP_Utils/settings.h"
+#include "EnvProcessing/EP_Utils/globalCalib.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/HessianBlocks.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/FullSystem.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/ImmaturePoint.h"

@@ -20,7 +20,7 @@
 
 
 #include "EnvProcessing/VisualOdometry/FullSystem/ImmaturePoint.h"
-#include "utils/FrameShell.h"
+#include "EnvProcessing/EP_Utils/FrameShell.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/ResidualProjections.h"
 
 namespace Boris_Brain {

@@ -21,9 +21,9 @@
 
 #ifndef BORIS_SYSTEM_BRAIN_VO_PIPELINE_H
 #define BORIS_SYSTEM_BRAIN_VO_PIPELINE_H
-#include "utils/settings.h"
+#include "EnvProcessing/EP_Utils/settings.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/FullSystem.h"
-#include "utils/Undistort.h"
+#include "EnvProcessing/EP_Utils/Undistort.h"
 #include "EnvProcessing/IOWrapper/Pangolin/PangolinDSOViewer.h"
 #include "EnvProcessing/IOWrapper/OutputWrapper/SampleOutputWrapper.h"
 #include <iostream>
@@ -32,12 +32,12 @@
 #include "EnvProcessing/IOWrapper/Output3DWrapper.h"
 #include "EnvProcessing/IOWrapper/ImageDisplay.h"
 #include <boost/thread.hpp>
-#include "utils/globalFuncs.h"
-#include "utils/NumType.h"
-#include "utils/DatasetReader.h"
+#include "EnvProcessing/EP_Utils/globalFuncs.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
+#include "EnvProcessing/EP_Utils/DatasetReader.h"
 #include "EnvProcessing/VisualOdometry/OptimizationBackend/MatrixAccumulators.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/PixelSelector2.h"
-#include "utils/globalCalib.h"
+#include "EnvProcessing/EP_Utils/globalCalib.h"
 #include "Boris_System_Setup.h"
 
 #include "CamerasAPI/videoStream.h"

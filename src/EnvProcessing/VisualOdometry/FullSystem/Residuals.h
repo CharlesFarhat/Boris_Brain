@@ -16,13 +16,13 @@
 #pragma once
 
  
-#include "utils/globalCalib.h"
+#include "EnvProcessing/EP_Utils/globalCalib.h"
 #include "vector"
  
-#include "utils/NumType.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
 #include <iostream>
 #include <fstream>
-#include "utils/globalFuncs.h"
+#include "EnvProcessing/EP_Utils/globalFuncs.h"
 #include "EnvProcessing/VisualOdometry/OptimizationBackend/RawResidualJacobian.h"
 
 namespace Boris_Brain {

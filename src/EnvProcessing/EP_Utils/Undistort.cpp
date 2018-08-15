@@ -23,11 +23,11 @@
 
 #include <Eigen/Core>
 #include <iterator>
-#include "utils/settings.h"
-#include "utils/globalFuncs.h"
+#include "settings.h"
+#include "globalFuncs.h"
 #include "EnvProcessing/IOWrapper/ImageDisplay.h"
 #include "EnvProcessing/IOWrapper/ImageRW.h"
-#include "utils/Undistort.h"
+#include "Undistort.h"
 
 namespace Boris_Brain {
 	namespace dso {

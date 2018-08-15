@@ -16,11 +16,11 @@
 #pragma once
 
  
-#include "utils/NumType.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
 #include "EnvProcessing/VisualOdometry/OptimizationBackend/MatrixAccumulators.h"
 #include "vector"
 #include <math.h>
-#include "utils/IndexThreadReduce.h"
+#include "EnvProcessing/EP_Utils/IndexThreadReduce.h"
 
 namespace Boris_Brain {
 	namespace dso {

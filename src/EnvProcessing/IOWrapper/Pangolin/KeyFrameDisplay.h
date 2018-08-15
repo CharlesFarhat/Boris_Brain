@@ -17,7 +17,7 @@
 
 #undef Success
 #include <Eigen/Core>
-#include "utils/NumType.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
 #include <pangolin/pangolin.h>
 
 #include <sstream>

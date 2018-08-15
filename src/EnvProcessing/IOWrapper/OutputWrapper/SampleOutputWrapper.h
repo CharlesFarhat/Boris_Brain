@@ -15,13 +15,13 @@
 
 #pragma once
 #include "boost/thread.hpp"
-#include "utils/MinimalImage.h"
+#include "EnvProcessing/EP_Utils/MinimalImage.h"
 #include "EnvProcessing/IOWrapper/Output3DWrapper.h"
 
 
 
 #include "EnvProcessing/VisualOdometry/FullSystem/HessianBlocks.h"
-#include "utils/FrameShell.h"
+#include "EnvProcessing/EP_Utils/FrameShell.h"
 
 
 namespace Boris_Brain {

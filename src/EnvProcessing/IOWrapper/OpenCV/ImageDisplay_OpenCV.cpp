@@ -23,7 +23,7 @@
 
 #include <boost/thread.hpp>
 
-#include "utils/settings.h"
+#include "EnvProcessing/EP_Utils/settings.h"
 
 
 namespace Boris_Brain {

@@ -25,11 +25,11 @@
 
 
 
-#include "utils/NumType.h"
+#include "EnvProcessing/EP_Utils/NumType.h"
 #include "EnvProcessing/IOWrapper/ImageDisplay.h"
-#include "utils/globalCalib.h"
+#include "EnvProcessing/EP_Utils/globalCalib.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/HessianBlocks.h"
-#include "utils/globalFuncs.h"
+#include "EnvProcessing/EP_Utils/globalFuncs.h"
 
 namespace Boris_Brain {
 	namespace dso {
