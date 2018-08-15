@@ -1,15 +1,4 @@
 /**
-* 
-* Copyright 2016 Technical University of Munich and Intel.
-* Developed by Jakob Engel <engelj at in dot tum dot de>,
-* If you use this code, please cite the respective publications as
-* listed on the above website.
-*
-* You should have received a copy of the GNU General Public License
-* along with, If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/**
  *
  * ____             _        _____           _
  *|  _ \           (_)      / ____|         | |
@@ -295,3 +284,14 @@ namespace Boris_Brain {
 		};
 	}
 }
+
+/**
+*
+* Copyright 2016 Technical University of Munich and Intel.
+* Developed by Jakob Engel <engelj at in dot tum dot de>,
+* If you use this code, please cite the respective publications as
+* listed on the above website.
+*
+* You should have received a copy of the GNU General Public License
+* along with, If not, see <http://www.gnu.org/licenses/>.
+*/
