@@ -1,5 +1,3 @@
-SET(OpenCV_QT_Support FALSE)
-
 cmake_minimum_required(VERSION 3.5)
 # Project
 set(PROJECT Boris_System_Brain)
@@ -23,24 +21,14 @@ if (MSVC)
     set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 endif (MSVC)
 
-IF (OpenCV_QT_Support)
-#Qt shit !
-set(CMAKE_AUTOMOC ON)
-find_package(Qt5 COMPONENTS
-        Core
-        REQUIRED)
-message(STATUS "Qt Found !")
-## End of those shit
-ENDIF()
-
-
 # Add plain cmake packages
 FIND_PACKAGE(OpenCV REQUIRED)
 FIND_PACKAGE(Eigen REQUIRED)
 find_package(SuiteParse REQUIRED)
 FIND_PACKAGE(Boost REQUIRED COMPONENTS thread system)
 find_package(Pangolin 0.2 QUIET)
-FIND_PACKAGE(yaml-cpp REQUIRED)
+#FIND_PACKAGE(yaml-cpp REQUIRED)
+
 # Boris_Utils used to get some maths and mainly technical stuff
 FIND_PACKAGE(Boris_Utils REQUIRED)
 
@@ -56,7 +44,7 @@ INCLUDE_DIRECTORIES(
         ${PROJECT_SOURCE_DIR}/ThirdParty/Sophus
         ${Boost_INCLUDE_DIRS}
         ${Boris_Utils_INCLUDE_DIRS}
-        ${YAML_CPP_INCLUDEDIR}
+       # ${YAML_CPP_INCLUDEDIR}
         ${PROJECT_SOURCE_DIR}/ThirdParty/sse2neon
 )
 
@@ -91,7 +79,7 @@ LIST(APPEND LINK_LIBS
         ${Boris_Utils_LIBRARIES}
         ${OpenCV_LIBS}
         ${Boost_LIBRARIES}
-        ${YAML_CPP_LIBRARIES}
+       # ${YAML_CPP_LIBRARIES}
         )
 
 # decide if we have pangolin
@@ -106,7 +94,7 @@ if (Pangolin_FOUND)
     set(HAS_PANGOLIN 1)
 else ()
     message("--- could not find PANGOLIN, not compiling dso_pangolin library.")
-    message("    this means there will be no 3D display / GUI available for dso_dataset.")
+    message("    this means there will be no 3D display / GUI available.")
     set(HAS_PANGOLIN 0)
 endif ()
 
