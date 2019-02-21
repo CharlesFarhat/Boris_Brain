@@ -34,7 +34,7 @@
 #include <opencv2/opencv.hpp>
 
 using namespace std;
-using namespace Boris_Brain::dso;
+using namespace Boris_Brain::ldso;
 
 void my_exit_handler(int s)
 {
@@ -81,6 +81,7 @@ int main(int argc, char* argv[])
     run_settings.playbackSpeed = 0;
     run_settings.debugSaveImages = 0;
     run_settings.mode = 0;
+    run_settings.enableLoopClosing = 1;
 
 
 
@@ -89,6 +90,9 @@ int main(int argc, char* argv[])
     app.add_option("-o, --sampleoutput", run_settings.sampleoutput, "use sample output", true);
     app.add_option("-f, --files", run_settings.source, "if you are using dataset MANDATORY !", true);
 
+    app.add_option("vocab =", run_settings.vocab, "", true);
+    app.add_option("calib=", run_settings.calib, "", true);
+    app.add_option("vignette=", run_settings.vignette, "", true);
 
     app.add_option("-q, --quiet", run_settings.debugout_runquiet, "", true);
     app.add_option("-p, --preset", run_settings.optionPreset, "", true);
@@ -105,9 +109,7 @@ int main(int argc, char* argv[])
     app.add_option("--save", run_settings.debugSaveImages, "", true);
     app.add_option("-m, --mode", run_settings.mode, "", true);
     app.add_option("-g, --gamma", run_settings.gammaCalib, "", true);
-
-    app.add_option("calib=", run_settings.calib, "", true);
-    app.add_option("vignette=", run_settings.vignette, "", true);
+    app.add_option("--loopClosure", run_settings.enableLoopClosing, "", true);
 
 
 
@@ -127,12 +129,12 @@ int main(int argc, char* argv[])
     {
         cout << "launching the Direct sparse visual odometry system" << endl;
 
-        Boris_Brain::dso::VO_Pipeline_Live liveDSO(&run_settings);
+        Boris_Brain::ldso::VO_Pipeline_Live liveDSO(&run_settings);
         liveDSO.lanchLive(run_settings.cameraindex);
     }
     else if (!run_settings.runningDSOLive)
     {
-        Boris_Brain::dso::VO_Pipeline_dataset datasetDSO(&run_settings);
+        Boris_Brain::ldso::VO_Pipeline_dataset datasetDSO(&run_settings);
         datasetDSO.launch_VO_Dataset();
     }
     else

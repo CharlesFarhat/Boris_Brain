@@ -8,231 +8,232 @@
 #include "internal/CalibHessian.h"
 #include "internal/OptimizationBackend/AccumulatedTopHessian.h"
 #include "internal/OptimizationBackend/AccumulatedSCHessian.h"
+namespace Boris_Brain {
+    namespace ldso {
+        namespace internal {
 
-namespace ldso {
-    namespace internal {
-
-        extern bool EFAdjointsValid;
-        extern bool EFIndicesValid;
-        extern bool EFDeltaValid;
-
-        /**
-         * The overall interface of optimization
-         * The FullSystem class will hold an instance of EnergyFunctional, and perform optimization steps through this interface.
-         *
-         * I moved all the EFrame/EFPoint/EFResidual data into FrameHessian/PointHessian/PointFrameResidual
-         * because I think the are the same.
-         *
-         * I don't know why dso designs such an optimization backend beside the fullSystem and keep its own frames,
-         * residuals, points which are already stored in FullSystem class. Here you still need to add/delete/margin
-         * all the stuffs and keep them synhonized with FullSystem. Looks not good. Maybe for some historical reasons?
-         *
-         */
-        class EnergyFunctional {
-        public:
-            EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
-
-            // only friend can see your private
-            friend class AccumulatedTopHessian;
-
-            friend class AccumulatedTopHessianSSE;
-
-            friend class AccumulatedSCHessian;
-
-            friend class AccumulatedSCHessianSSE;
-
-            friend class PointHessian;
-
-            friend class FrameHessian;
-
-            friend class CalibHessian;
-
-            friend class PointFrameResidual;
-
-            friend class FeatureObsResidual;
-
-            EnergyFunctional();
-
-            ~EnergyFunctional();
+            extern bool EFAdjointsValid;
+            extern bool EFIndicesValid;
+            extern bool EFDeltaValid;
 
             /**
-             * insert a point-frame residual
-             * @param r
+             * The overall interface of optimization
+             * The FullSystem class will hold an instance of EnergyFunctional, and perform optimization steps through this interface.
+             *
+             * I moved all the EFrame/EFPoint/EFResidual data into FrameHessian/PointHessian/PointFrameResidual
+             * because I think the are the same.
+             *
+             * I don't know why dso designs such an optimization backend beside the fullSystem and keep its own frames,
+             * residuals, points which are already stored in FullSystem class. Here you still need to add/delete/margin
+             * all the stuffs and keep them synhonized with FullSystem. Looks not good. Maybe for some historical reasons?
+             *
              */
-            void insertResidual(shared_ptr<PointFrameResidual> r);
+            class EnergyFunctional {
+            public:
+                EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
-            /**
-             * insert a feature observation residual
-             * @param r
-             */
-            // void insertResidual( shared_ptr<FeatureObsResidual> r );
+                // only friend can see your private
+                friend class AccumulatedTopHessian;
 
-            /**
-             * add a single frame
-             * @param fh
-             * @param Hcalib
-             */
-            void insertFrame(shared_ptr<FrameHessian> fh, shared_ptr<CalibHessian> Hcalib);
+                friend class AccumulatedTopHessianSSE;
 
-            /**
-             * drop a point-frame residual
-             * @param r
-             */
-            void dropResidual(shared_ptr<PointFrameResidual> r);
+                friend class AccumulatedSCHessian;
 
-            // void dropResidual( shared_ptr<FeatureObsResidual> r);
+                friend class AccumulatedSCHessianSSE;
 
-            /**
-             * marginalize a given frame
-             * @param fh
-             */
-            void marginalizeFrame(shared_ptr<FrameHessian> fh);
+                friend class PointHessian;
 
-            /**
-             * remove a point, delete all the residuals about it.
-             * @param ph
-             */
-            void removePoint(shared_ptr<PointHessian> ph);
+                friend class FrameHessian;
 
-            /**
-             * Marg all points to compute Bundle Adjustment
-             */
-            void marginalizePointsF();
+                friend class CalibHessian;
 
-            /**
-             * remove the points marked as PS_DROP
-             */
-            void dropPointsF();
+                friend class PointFrameResidual;
 
-            /**
-             * solve the all system by Gauss-Newton or LM iteration
-             * GN or LM is defined in the bit of setting_solverMode
-             * @param iteration
-             * @param lambda
-             * @param HCalib
-             */
-            void solveSystemF(int iteration, double lambda, shared_ptr<CalibHessian> HCalib);
+                friend class FeatureObsResidual;
 
-            /**
-             * compute frame-frame prior energy
-             * @return
-             */
-            double calcMEnergyF();
+                EnergyFunctional();
 
-            /**
-             * compute point energy with multi-threading
-             * @return
-             */
-            double calcLEnergyF_MT();
+                ~EnergyFunctional();
 
-            /**
-             * compute the feature energy
-             */
-            // double calcLEnergyFeat();
+                /**
+                 * insert a point-frame residual
+                 * @param r
+                 */
+                void insertResidual(shared_ptr<PointFrameResidual> r);
 
-            /**
-             * create the indecies of H and b
-             */
-            void makeIDX();
+                /**
+                 * insert a feature observation residual
+                 * @param r
+                 */
+                // void insertResidual( shared_ptr<FeatureObsResidual> r );
 
-            /**
-             * don't know what is deltaF ...
-             * @param HCalib
-             */
-            void setDeltaF(shared_ptr<CalibHessian> HCalib);
+                /**
+                 * add a single frame
+                 * @param fh
+                 * @param Hcalib
+                 */
+                void insertFrame(shared_ptr<FrameHessian> fh, shared_ptr<CalibHessian> Hcalib);
 
-            /**
-             * set the adjoints of frames
-             * @param Hcalib
-             */
-            void setAdjointsF(shared_ptr<CalibHessian> Hcalib);
+                /**
+                 * drop a point-frame residual
+                 * @param r
+                 */
+                void dropResidual(shared_ptr<PointFrameResidual> r);
 
-            // all related frames
-            std::vector<shared_ptr<FrameHessian>> frames;
-            int nPoints = 0, nFrames = 0, nResiduals = 0;
+                // void dropResidual( shared_ptr<FeatureObsResidual> r);
 
-            MatXX HM = MatXX::Zero(CPARS, CPARS);   // frame-frame H matrix
-            VecX bM = VecX::Zero(CPARS);    // frame-frame b vector
+                /**
+                 * marginalize a given frame
+                 * @param fh
+                 */
+                void marginalizeFrame(shared_ptr<FrameHessian> fh);
 
-            int resInA = 0, resInL = 0, resInM = 0;
+                /**
+                 * remove a point, delete all the residuals about it.
+                 * @param ph
+                 */
+                void removePoint(shared_ptr<PointHessian> ph);
 
-            MatXX lastHS;
-            VecX lastbS;
-            VecX lastX;
+                /**
+                 * Marg all points to compute Bundle Adjustment
+                 */
+                void marginalizePointsF();
 
-            std::vector<VecX> lastNullspaces_forLogging;
-            std::vector<VecX> lastNullspaces_pose;
-            std::vector<VecX> lastNullspaces_scale;
-            std::vector<VecX> lastNullspaces_affA;
-            std::vector<VecX> lastNullspaces_affB;
+                /**
+                 * remove the points marked as PS_DROP
+                 */
+                void dropPointsF();
 
-            IndexThreadReduce<Vec10> *red = nullptr;  // passed by full system
+                /**
+                 * solve the all system by Gauss-Newton or LM iteration
+                 * GN or LM is defined in the bit of setting_solverMode
+                 * @param iteration
+                 * @param lambda
+                 * @param HCalib
+                 */
+                void solveSystemF(int iteration, double lambda, shared_ptr<CalibHessian> HCalib);
 
-            /**
-             * connectivity map, the higher 32 bit of the key is host frame's id, and the lower is target frame's id
-             */
-            std::map<uint64_t,
-                    Eigen::Vector2i,
-                    std::less<uint64_t>,
-                    Eigen::aligned_allocator<std::pair<const uint64_t, Eigen::Vector2i>>
-            > connectivityMap;
+                /**
+                 * compute frame-frame prior energy
+                 * @return
+                 */
+                double calcMEnergyF();
 
-        private:
-            /// I really don't know what are they doing in the private functions
+                /**
+                 * compute point energy with multi-threading
+                 * @return
+                 */
+                double calcLEnergyF_MT();
 
-            VecX getStitchedDeltaF() const {
-                VecX d = VecX(CPARS + nFrames * 8);
-                d.head<CPARS>() = cDeltaF.cast<double>();
-                for (int h = 0; h < nFrames; h++)
-                    d.segment<8>(CPARS + 8 * h) = frames[h]->delta;
-                return d;
-            }
+                /**
+                 * compute the feature energy
+                 */
+                // double calcLEnergyFeat();
 
-            /**
-             * substitute the variable x into frameHessians
-             */
-            void resubstituteF_MT(const VecX &x, shared_ptr<CalibHessian> HCalib, bool MT);
+                /**
+                 * create the indecies of H and b
+                 */
+                void makeIDX();
 
-            /**
-             * substitute the variable xc into pointHessians
-             */
-            void resubstituteFPt(const VecCf &xc, Mat18f *xAd, int min, int max, Vec10 *stats,
-                                 int tid);
+                /**
+                 * don't know what is deltaF ...
+                 * @param HCalib
+                 */
+                void setDeltaF(shared_ptr<CalibHessian> HCalib);
 
-            void accumulateAF_MT(MatXX &H, VecX &b, bool MT);
+                /**
+                 * set the adjoints of frames
+                 * @param Hcalib
+                 */
+                void setAdjointsF(shared_ptr<CalibHessian> Hcalib);
 
-            void accumulateLF_MT(MatXX &H, VecX &b, bool MT);
+                // all related frames
+                std::vector<shared_ptr<FrameHessian>> frames;
+                int nPoints = 0, nFrames = 0, nResiduals = 0;
 
-            void accumulateSCF_MT(MatXX &H, VecX &b, bool MT);
+                MatXX HM = MatXX::Zero(CPARS, CPARS);   // frame-frame H matrix
+                VecX bM = VecX::Zero(CPARS);    // frame-frame b vector
 
-            void calcLEnergyPt(int min, int max, Vec10 *stats, int tid);
+                int resInA = 0, resInL = 0, resInM = 0;
 
-            void orthogonalize(VecX *b, MatXX *H);
+                MatXX lastHS;
+                VecX lastbS;
+                VecX lastX;
 
-            // don't use shared_ptr to handle dynamic arrays
-            Mat18f *adHTdeltaF = nullptr;
+                std::vector<VecX> lastNullspaces_forLogging;
+                std::vector<VecX> lastNullspaces_pose;
+                std::vector<VecX> lastNullspaces_scale;
+                std::vector<VecX> lastNullspaces_affA;
+                std::vector<VecX> lastNullspaces_affB;
 
-            Mat88 *adHost = nullptr;    // arrays of adjoints, adHost = -Adj(HostToTarget)^T
-            Mat88 *adTarget = nullptr;
+                IndexThreadReduce <Vec10> *red = nullptr;  // passed by full system
 
-            Mat88f *adHostF = nullptr;
-            Mat88f *adTargetF = nullptr;
+                /**
+                 * connectivity map, the higher 32 bit of the key is host frame's id, and the lower is target frame's id
+                 */
+                std::map<uint64_t,
+                        Eigen::Vector2i,
+                        std::less<uint64_t>,
+                        Eigen::aligned_allocator<std::pair<const uint64_t, Eigen::Vector2i>>
+                > connectivityMap;
 
-            VecC cPrior;
-            VecCf cDeltaF;  // camera intrinsic change
-            VecCf cPriorF;
+            private:
+                /// I really don't know what are they doing in the private functions
 
-            shared_ptr<AccumulatedTopHessianSSE> accSSE_top_L;
-            shared_ptr<AccumulatedTopHessianSSE> accSSE_top_A;
-            shared_ptr<AccumulatedSCHessianSSE> accSSE_bot;
+                VecX getStitchedDeltaF() const {
+                    VecX d = VecX(CPARS + nFrames * 8);
+                    d.head<CPARS>() = cDeltaF.cast<double>();
+                    for (int h = 0; h < nFrames; h++)
+                        d.segment<8>(CPARS + 8 * h) = frames[h]->delta;
+                    return d;
+                }
 
-            std::vector<shared_ptr<PointHessian>> allPoints;
-            std::vector<shared_ptr<PointHessian>> allPointsToMarg;
+                /**
+                 * substitute the variable x into frameHessians
+                 */
+                void resubstituteF_MT(const VecX &x, shared_ptr<CalibHessian> HCalib, bool MT);
 
-            float currentLambda = 0;
-        };
+                /**
+                 * substitute the variable xc into pointHessians
+                 */
+                void resubstituteFPt(const VecCf &xc, Mat18f *xAd, int min, int max, Vec10 *stats,
+                                     int tid);
+
+                void accumulateAF_MT(MatXX &H, VecX &b, bool MT);
+
+                void accumulateLF_MT(MatXX &H, VecX &b, bool MT);
+
+                void accumulateSCF_MT(MatXX &H, VecX &b, bool MT);
+
+                void calcLEnergyPt(int min, int max, Vec10 *stats, int tid);
+
+                void orthogonalize(VecX *b, MatXX *H);
+
+                // don't use shared_ptr to handle dynamic arrays
+                Mat18f *adHTdeltaF = nullptr;
+
+                Mat88 *adHost = nullptr;    // arrays of adjoints, adHost = -Adj(HostToTarget)^T
+                Mat88 *adTarget = nullptr;
+
+                Mat88f *adHostF = nullptr;
+                Mat88f *adTargetF = nullptr;
+
+                VecC cPrior;
+                VecCf cDeltaF;  // camera intrinsic change
+                VecCf cPriorF;
+
+                shared_ptr<AccumulatedTopHessianSSE> accSSE_top_L;
+                shared_ptr<AccumulatedTopHessianSSE> accSSE_top_A;
+                shared_ptr<AccumulatedSCHessianSSE> accSSE_bot;
+
+                std::vector<shared_ptr<PointHessian>> allPoints;
+                std::vector<shared_ptr<PointHessian>> allPointsToMarg;
+
+                float currentLambda = 0;
+            };
+        }
+
     }
-
 }
 
 #endif // LDSO_ENERGY_FUNCTIONAL_H_

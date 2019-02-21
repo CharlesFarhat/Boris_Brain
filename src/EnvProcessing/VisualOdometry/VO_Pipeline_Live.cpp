@@ -20,18 +20,19 @@
  */
 
 #include "VO_Pipeline_Live.h"
-#include <locale.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <stdio.h>
+#include <thread>
+#include <clocale>
+#include <csignal>
+#include <cstdlib>
+#include <cstdio>
 #include <unistd.h>
-#include "
+#include <sys/time.h>
 
 using namespace std;
-using namespace Boris_Brain::dso;
+using namespace Boris_Brain::ldso;
 
 namespace Boris_Brain {
-    namespace dso {
+    namespace ldso {
 
         VO_Pipeline_dataset::VO_Pipeline_dataset(Settings *run_settings) {
 
@@ -82,10 +83,20 @@ namespace Boris_Brain {
                 printf("START AT %d!\n", start);
 
 
-
                 end = run_settings->end;
                 printf("END AT %d!\n", end);
 
+                if (run_settings->enableLoopClosing == 1) {
+                    setting_enableLoopClosing = true;
+                    printf("Using loop closure !");
+                 } else {
+                     setting_enableLoopClosing = false;
+                     printf("Not using loop closure !");
+                 }
+
+
+                vocPath = run_settings->vocab;
+                printf("loading vocabulary from %s!\n", vocPath.c_str());
 
                 source = run_settings->source;
                 printf("loading data from %s!\n", source.c_str());
@@ -95,7 +106,6 @@ namespace Boris_Brain {
 
                 vignette = run_settings->vignette;
                 printf("loading vignette from %s!\n", vignette.c_str());
-
 
                 gammaCalib = run_settings->gammaCalib;
                 printf("loading gammaCalib from %s!\n", gammaCalib.c_str());
@@ -191,11 +201,20 @@ namespace Boris_Brain {
             printf("==============================================\n");
         }
 
-
-
         void VO_Pipeline_dataset::launch_VO_Dataset() {
 
-            reader = new ImageFolderReader(source, calib, gammaCalib, vignette);
+            // check setting conflicts
+            if (setting_enableLoopClosing && (setting_pointSelection != 1)) {
+                LOG(ERROR) << "Loop closing is enabled but point selection strategy is not set to LDSO, "
+                              "use setting_pointSelection=1! please!" << endl;
+                exit(-1);
+            }
+
+            if (setting_showLoopClosing) {
+                LOG(WARNING) << "show loop closing results. The program will be paused when any loop is found" << endl;
+            }
+
+            reader = new ImageFolderReader(ImageFolderReader::TUM_MONO, source, calib, gammaCalib, vignette);
             reader->setGlobalCalibration();
 
 
@@ -203,7 +222,6 @@ namespace Boris_Brain {
                 printf("ERROR: dont't have photometric calibation. Need to use commandline options mode=1 or mode=2 ");
                 exit(1);
             }
-
 
             int lstart = start;
             int lend = end;
@@ -218,7 +236,10 @@ namespace Boris_Brain {
             }
 
 
-            fullSystem = new FullSystem();
+            voc = new ORBVocabulary();
+            voc->load(vocPath);
+
+            fullSystem = new FullSystem(voc);
             fullSystem->setGammaFunction(reader->getPhotometricGamma());
             fullSystem->linearizeOperation = (playbackSpeed == 0);
 
@@ -386,7 +407,6 @@ namespace Boris_Brain {
 
             printf("EXIT NOW!\n");
         }
-
 
         VO_Pipeline_dataset::~VO_Pipeline_dataset() {
             printf("DELETE FULLSYSTEM!\n");

@@ -29,6 +29,7 @@ struct Settings
     int optionPreset;              /// Preset to use 1 / 2 ...
     int disableReconfigure;
     int setting_logStuff;
+    int enableLoopClosing;
     int reverse;
     int disableAllDisplay;
     int multiThreading;
@@ -39,6 +40,7 @@ struct Settings
     std::string calib;
     std::string vignette;
     std::string gammaCalib;
+    std::string vocab;
     double rescale;
     float playbackSpeed;
     bool debugSaveImages;

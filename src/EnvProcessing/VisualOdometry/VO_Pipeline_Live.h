@@ -21,29 +21,35 @@
 
 #ifndef BORIS_SYSTEM_BRAIN_VO_PIPELINE_H
 #define BORIS_SYSTEM_BRAIN_VO_PIPELINE_H
+
+#include <iostream>
+#include <boost/thread.hpp>
+#include <boost/lexical_cast.hpp>
+#include <opencv2/opencv.hpp>
+/* OLD stuff just here in case I need it !
 #include "EnvProcessing/EP_Utils/settings.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/FullSystem.h"
 #include "EnvProcessing/EP_Utils/Undistort.h"
 #include "EnvProcessing/IOWrapper/Pangolin/PangolinDSOViewer.h"
 #include "EnvProcessing/IOWrapper/OutputWrapper/SampleOutputWrapper.h"
-#include <iostream>
-#include <boost/lexical_cast.hpp>
-#include <opencv2/opencv.hpp>
 #include "EnvProcessing/IOWrapper/Output3DWrapper.h"
 #include "EnvProcessing/IOWrapper/ImageDisplay.h"
-#include <boost/thread.hpp>
 #include "EnvProcessing/EP_Utils/globalFuncs.h"
 #include "EnvProcessing/EP_Utils/NumType.h"
 #include "EnvProcessing/EP_Utils/DatasetReader.h"
 #include "EnvProcessing/VisualOdometry/OptimizationBackend/MatrixAccumulators.h"
 #include "EnvProcessing/VisualOdometry/FullSystem/PixelSelector2.h"
 #include "EnvProcessing/EP_Utils/globalCalib.h"
-#include "Boris_System_Setup.h"
+ */
 
+
+#include "frontend/FullSystem.h"
+#include "utils/DatasetReader.h"
+#include "Boris_System_Setup.h"
 #include "CamerasAPI/videoStream.h"
 
 namespace Boris_Brain {
-    namespace dso {
+    namespace ldso {
 
         class VO_Pipeline_dataset {
         public:
@@ -60,6 +66,7 @@ namespace Boris_Brain {
             std::string gammaCalib = "";
             std::string source = "";
             std::string calib = "";
+            std::string vocPath = "";
             double rescale = 1;
             bool reverse = false;
             int start = 0;
@@ -69,10 +76,9 @@ namespace Boris_Brain {
             bool preload = false;
             bool useSampleOutput = false;
             int mode = 0;
-            dso::FullSystem *fullSystem = 0;
-            ImageFolderReader *reader = 0;
-
-
+            ldso::FullSystem *fullSystem = 0;
+            shared_ptr<ImageFolderReader> reader = 0;
+            shared_ptr<ORBVocabulary> voc = 0;
         };
 
 
@@ -90,8 +96,8 @@ namespace Boris_Brain {
             std::string vignetteFile = "";
             std::string gammaFile = "";
             bool useSampleOutput = false;
-            dso::FullSystem *fullSystem = 0;
-            dso::Undistort *undistorter = 0;
+            ldso::FullSystem *fullSystem = 0;
+            ldso::Undistort *undistorter = 0;
             int frameID = 0;
         };
 

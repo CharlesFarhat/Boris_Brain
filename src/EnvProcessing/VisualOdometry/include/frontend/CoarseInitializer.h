@@ -11,177 +11,180 @@
 #include "Frame.h"
 #include "Point.h"
 
-using namespace ldso;
-using namespace ldso::internal;
+using namespace Boris_Brain::ldso;
+using namespace Boris_Brain::ldso::internal;
 
-namespace ldso {
+namespace Boris_Brain {
 
-    /**
-     * point structure used in coarse initializer
-     */
-    struct Pnt {
-    public:
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+    namespace ldso {
 
-        // index in jacobian. never changes (actually, there is no reason why).
-        float u, v;
+        /**
+         * point structure used in coarse initializer
+         */
+        struct Pnt {
+        public:
+            EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
-        // idepth / isgood / energy during optimization.
-        float idepth;
-        bool isGood;
-        Vec2f energy;        // (UenergyPhotometric, energyRegularizer)
-        bool isGood_new;
-        float idepth_new;
-        Vec2f energy_new;
+            // index in jacobian. never changes (actually, there is no reason why).
+            float u, v;
 
-        float iR;
-        float iRSumNum;
+            // idepth / isgood / energy during optimization.
+            float idepth;
+            bool isGood;
+            Vec2f energy;        // (UenergyPhotometric, energyRegularizer)
+            bool isGood_new;
+            float idepth_new;
+            Vec2f energy_new;
 
-        float lastHessian;
-        float lastHessian_new;
+            float iR;
+            float iRSumNum;
 
-        // max stepsize for idepth (corresponding to max. movement in pixel-space).
-        float maxstep;
+            float lastHessian;
+            float lastHessian_new;
 
-        // idx (x+y*w) of closest point one pyramid level above.
-        int parent;
-        float parentDist;
+            // max stepsize for idepth (corresponding to max. movement in pixel-space).
+            float maxstep;
 
-        // idx (x+y*w) of up to 10 nearest points in pixel space.
-        int neighbours[10];
-        float neighboursDist[10];
+            // idx (x+y*w) of closest point one pyramid level above.
+            int parent;
+            float parentDist;
 
-        float my_type;
-        float outlierTH;
-    };
+            // idx (x+y*w) of up to 10 nearest points in pixel space.
+            int neighbours[10];
+            float neighboursDist[10];
 
-    /**
-     * initializer for monocular slam
-     */
-    class CoarseInitializer {
-    public:
+            float my_type;
+            float outlierTH;
+        };
 
-        EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
+        /**
+         * initializer for monocular slam
+         */
+        class CoarseInitializer {
+        public:
 
-        CoarseInitializer(int w, int h);
+            EIGEN_MAKE_ALIGNED_OPERATOR_NEW;
 
-        ~CoarseInitializer();
+            CoarseInitializer(int w, int h);
 
-
-        void setFirst(shared_ptr<CalibHessian> HCalib, shared_ptr<FrameHessian> newFrameHessian);
-
-        bool trackFrame(shared_ptr<FrameHessian> newFrameHessian);
-
-        void calcTGrads(shared_ptr<FrameHessian> newFrameHessian);
-
-        int frameID = -1;
-        bool fixAffine = true;
-        bool printDebug = false;
-
-        Pnt *points[PYR_LEVELS];
-        int numPoints[PYR_LEVELS];
-        AffLight thisToNext_aff;
-        SE3 thisToNext;
+            ~CoarseInitializer();
 
 
-        shared_ptr<FrameHessian> firstFrame;
-        shared_ptr<FrameHessian> newFrame;
-    private:
-        Mat33 K[PYR_LEVELS];
-        Mat33 Ki[PYR_LEVELS];
-        double fx[PYR_LEVELS];
-        double fy[PYR_LEVELS];
-        double fxi[PYR_LEVELS];
-        double fyi[PYR_LEVELS];
-        double cx[PYR_LEVELS];
-        double cy[PYR_LEVELS];
-        double cxi[PYR_LEVELS];
-        double cyi[PYR_LEVELS];
-        int w[PYR_LEVELS];
-        int h[PYR_LEVELS];
+            void setFirst(shared_ptr<CalibHessian> HCalib, shared_ptr<FrameHessian> newFrameHessian);
 
-        void makeK(shared_ptr<CalibHessian> HCalib);
+            bool trackFrame(shared_ptr<FrameHessian> newFrameHessian);
 
-        bool snapped;
-        int snappedAt;
+            void calcTGrads(shared_ptr<FrameHessian> newFrameHessian);
 
-        // pyramid images & levels on all levels
-        Eigen::Vector3f *dINew[PYR_LEVELS];
-        Eigen::Vector3f *dIFist[PYR_LEVELS];
+            int frameID = -1;
+            bool fixAffine = true;
+            bool printDebug = false;
 
-        Eigen::DiagonalMatrix<float, 8> wM;
+            Pnt *points[PYR_LEVELS];
+            int numPoints[PYR_LEVELS];
+            AffLight thisToNext_aff;
+            SE3 thisToNext;
 
-        // temporary buffers for H and b.
-        Vec10f *JbBuffer;            // 0-7: sum(dd * dp). 8: sum(res*dd). 9: 1/(1+sum(dd*dd))=inverse hessian entry.
-        Vec10f *JbBuffer_new;
 
-        Accumulator9 acc9;
-        Accumulator9 acc9SC;
+            shared_ptr<FrameHessian> firstFrame;
+            shared_ptr<FrameHessian> newFrame;
+        private:
+            Mat33 K[PYR_LEVELS];
+            Mat33 Ki[PYR_LEVELS];
+            double fx[PYR_LEVELS];
+            double fy[PYR_LEVELS];
+            double fxi[PYR_LEVELS];
+            double fyi[PYR_LEVELS];
+            double cx[PYR_LEVELS];
+            double cy[PYR_LEVELS];
+            double cxi[PYR_LEVELS];
+            double cyi[PYR_LEVELS];
+            int w[PYR_LEVELS];
+            int h[PYR_LEVELS];
 
-        Vec3f dGrads[PYR_LEVELS];
+            void makeK(shared_ptr<CalibHessian> HCalib);
 
-        float alphaK;
-        float alphaW;
-        float regWeight;
-        float couplingWeight;
+            bool snapped;
+            int snappedAt;
 
-        Vec3f calcResAndGS(
-                int lvl,
-                Mat88f &H_out, Vec8f &b_out,
-                Mat88f &H_out_sc, Vec8f &b_out_sc,
-                const SE3 &refToNew, AffLight refToNew_aff,
-                bool plot);
+            // pyramid images & levels on all levels
+            Eigen::Vector3f *dINew[PYR_LEVELS];
+            Eigen::Vector3f *dIFist[PYR_LEVELS];
 
-        Vec3f calcEC(int lvl); // returns OLD NERGY, NEW ENERGY, NUM TERMS.
-        void optReg(int lvl);
+            Eigen::DiagonalMatrix<float, 8> wM;
 
-        void propagateUp(int srcLvl);
+            // temporary buffers for H and b.
+            Vec10f *JbBuffer;            // 0-7: sum(dd * dp). 8: sum(res*dd). 9: 1/(1+sum(dd*dd))=inverse hessian entry.
+            Vec10f *JbBuffer_new;
 
-        void propagateDown(int srcLvl);
+            Accumulator9 acc9;
+            Accumulator9 acc9SC;
 
-        float rescale();
+            Vec3f dGrads[PYR_LEVELS];
 
-        void resetPoints(int lvl);
+            float alphaK;
+            float alphaW;
+            float regWeight;
+            float couplingWeight;
 
-        void doStep(int lvl, float lambda, Vec8f inc);
+            Vec3f calcResAndGS(
+                    int lvl,
+                    Mat88f &H_out, Vec8f &b_out,
+                    Mat88f &H_out_sc, Vec8f &b_out_sc,
+                    const SE3 &refToNew, AffLight refToNew_aff,
+                    bool plot);
 
-        void applyStep(int lvl);
+            Vec3f calcEC(int lvl); // returns OLD NERGY, NEW ENERGY, NUM TERMS.
+            void optReg(int lvl);
 
-        void makeGradients(Eigen::Vector3f **data);
+            void propagateUp(int srcLvl);
 
-        void makeNN();
-    };
+            void propagateDown(int srcLvl);
 
-    /**
-     * minimal flann point cloud
-     */
-    struct FLANNPointcloud {
-        inline FLANNPointcloud() {
-            num = 0;
-            points = 0;
-        }
+            float rescale();
 
-        inline FLANNPointcloud(int n, Pnt *p) : num(n), points(p) {}
+            void resetPoints(int lvl);
 
-        int num;
-        Pnt *points;
+            void doStep(int lvl, float lambda, Vec8f inc);
 
-        inline size_t kdtree_get_point_count() const { return num; }
+            void applyStep(int lvl);
 
-        inline float kdtree_distance(const float *p1, const size_t idx_p2, size_t /*size*/) const {
-            const float d0 = p1[0] - points[idx_p2].u;
-            const float d1 = p1[1] - points[idx_p2].v;
-            return d0 * d0 + d1 * d1;
-        }
+            void makeGradients(Eigen::Vector3f **data);
 
-        inline float kdtree_get_pt(const size_t idx, int dim) const {
-            if (dim == 0) return points[idx].u;
-            else return points[idx].v;
-        }
+            void makeNN();
+        };
 
-        template<class BBOX>
-        bool kdtree_get_bbox(BBOX & /* bb */) const { return false; }
-    };
+        /**
+         * minimal flann point cloud
+         */
+        struct FLANNPointcloud {
+            inline FLANNPointcloud() {
+                num = 0;
+                points = 0;
+            }
+
+            inline FLANNPointcloud(int n, Pnt *p) : num(n), points(p) {}
+
+            int num;
+            Pnt *points;
+
+            inline size_t kdtree_get_point_count() const { return num; }
+
+            inline float kdtree_distance(const float *p1, const size_t idx_p2, size_t /*size*/) const {
+                const float d0 = p1[0] - points[idx_p2].u;
+                const float d1 = p1[1] - points[idx_p2].v;
+                return d0 * d0 + d1 * d1;
+            }
+
+            inline float kdtree_get_pt(const size_t idx, int dim) const {
+                if (dim == 0) return points[idx].u;
+                else return points[idx].v;
+            }
+
+            template<class BBOX>
+            bool kdtree_get_bbox(BBOX & /* bb */) const { return false; }
+        };
+    }
 }
 
 #endif // LDSO_COARSE_INITIALIZER_H_

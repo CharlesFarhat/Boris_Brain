@@ -12,68 +12,67 @@
 #include <mutex>
 
 using namespace std;
-using namespace ldso::internal;
+using namespace Boris_Brain::ldso::internal;
+namespace Boris_Brain {
+    namespace ldso {
 
-namespace ldso {
-
-    class FullSystem;
-
-    /**
-     * The global map contains all keyframes and map points, even if they are marginalized or outdated.
-     * The map can be saved to and loaded from disk, if you wanna reuse it.
-     *
-     * The loop closing thread will call the optimize function if there is a consistent loop closure.
-     */
-
-    class Map {
-    public:
-        Map(FullSystem *fs) : fullsystem(fs) {}
+        class FullSystem;
 
         /**
-         * add a keyframe into the global map
-         * @param kf
+         * The global map contains all keyframes and map points, even if they are marginalized or outdated.
+         * The map can be saved to and loaded from disk, if you wanna reuse it.
+         *
+         * The loop closing thread will call the optimize function if there is a consistent loop closure.
          */
-        void AddKeyFrame(shared_ptr<Frame> kf);
 
-        /**
-         * optimize pose graph of all kfs
-         * this will start the pose graph optimization thread (usually takes several seconds to return in my machine)
-         * @param allKFs
-         * @return true if pose graph thread is started
-         */
-        bool OptimizeALLKFs();
+        class Map {
+        public:
+            Map(FullSystem *fs) : fullsystem(fs) {}
 
-        /**
-         * get number of frames stored in global map
-         * @return
-         */
-        inline int NumFrames() const {
-            return frames.size();
-        }
+            /**
+             * add a keyframe into the global map
+             * @param kf
+             */
+            void AddKeyFrame(shared_ptr<Frame> kf);
 
-        // is pose graph running?
-        bool Idle() {
-            unique_lock<mutex> lock(mutexPoseGraph);
-            return !poseGraphRunning;
-        }
+            /**
+             * optimize pose graph of all kfs
+             * this will start the pose graph optimization thread (usually takes several seconds to return in my machine)
+             * @param allKFs
+             * @return true if pose graph thread is started
+             */
+            bool OptimizeALLKFs();
 
-        set<shared_ptr<Frame>, CmpFrameID> GetAllKFs() { return frames; }
+            /**
+             * get number of frames stored in global map
+             * @return
+             */
+            inline int NumFrames() const {
+                return frames.size();
+            }
 
-    private:
-        // the pose graph optimization thread
-        void runPoseGraphOptimization();
+            // is pose graph running?
+            bool Idle() {
+                unique_lock<mutex> lock(mutexPoseGraph);
+                return !poseGraphRunning;
+            }
 
-        mutex mapMutex; // map mutex to protect its data
-        set<shared_ptr<Frame>, CmpFrameID> frames;      // all KFs by ID
-        set<shared_ptr<Frame>, CmpFrameID> framesOpti;  // KFs to be optimized
-        shared_ptr<Frame> currentKF = nullptr;
+            set<shared_ptr<Frame>, CmpFrameID> GetAllKFs() { return frames; }
 
-        bool poseGraphRunning = false;  // is pose graph running?
-        mutex mutexPoseGraph;
+        private:
+            // the pose graph optimization thread
+            void runPoseGraphOptimization();
 
-        FullSystem *fullsystem = nullptr;
-    };
+            mutex mapMutex; // map mutex to protect its data
+            set<shared_ptr<Frame>, CmpFrameID> frames;      // all KFs by ID
+            set<shared_ptr<Frame>, CmpFrameID> framesOpti;  // KFs to be optimized
+            shared_ptr<Frame> currentKF = nullptr;
 
+            bool poseGraphRunning = false;  // is pose graph running?
+            mutex mutexPoseGraph;
+
+            FullSystem *fullsystem = nullptr;
+        };
+    }
 }
-
 #endif // LDSO_MAP_H_

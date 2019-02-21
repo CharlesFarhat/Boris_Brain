@@ -35,6 +35,7 @@ INCLUDE_DIRECTORIES(
         ${Glog_INCLUDE_DIRS}
         ${Pangolin_INCLUDE_DIRS}
 
+        ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_SOURCE_DIR}/src/EnvProcessing/VisualOdometry/include
         ${Boris_Utils_INCLUDE_DIRS}
 )
