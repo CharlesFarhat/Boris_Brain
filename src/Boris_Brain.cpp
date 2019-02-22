@@ -144,6 +144,6 @@ int main(int argc, char* argv[])
     // TODO : launch REMODE thread to compute High density map
 
     printf("System finished.\n");
-    std::cout << "test over -----> from main system \n" << std::endl;
+    std::cout << "test over -----> from main system bye hope to see you soon \n" << std::endl;
     return 0;
 }
