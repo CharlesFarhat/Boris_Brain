@@ -74,7 +74,7 @@ namespace Boris_Brain {
                         }
 
                         red->reduce(bind(&AccumulatedTopHessianSSE::stitchDoubleInternal,
-                                         this, Hs, bs, EF, usePrior, _1, _2, _3, _4), 0, nframes[0] * nframes[0], 0);
+                                         this, Hs, bs, EF, usePrior, placeholders::_1,placeholders::_2, placeholders::_3,placeholders::_4), 0, nframes[0] * nframes[0], 0);
 
                         // sum up results
                         H = Hs[0];

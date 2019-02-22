@@ -32,11 +32,9 @@ namespace Boris_Brain {
                 globalMap(new Map(this)),
                 vocab(voc) {
 
-            LOG(INFO) << "This is Direct Sparse Odometry, a fully direct VO proposed by TUM vision group."
-                         "For more information about dso, see Direct Sparse Odometry, J. Engel, V. Koltun, "
-                         "D. Cremers, In arXiv:1607.02565, 2016. For loop closing part, see "
-                         "LDSO: Direct Sparse Odometry with Loop Closure, X. Gao, R. Wang, N. Demmel, D. Cremers, "
-                         "In International Conference on Intelligent Robots and Systems (IROS), 2018 " << endl;
+            LOG(INFO) << "This is the Direct Sparse Odometry (whith loop closure) module from the boris brain module"
+                         "LDSO: Direct Sparse Odometry with Loop Closure, X. Gao, R. Wang, N. Demmel, D. Cremers"
+                         "Editing charles200000" << endl;
 
             Hcalib->CreateCH(Hcalib);
             lastCoarseRMSE.setConstant(100);

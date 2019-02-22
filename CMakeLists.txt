@@ -6,6 +6,13 @@ SET(CMAKE_BUILD_TYPE Release) # Release, RelWithDebInfo
 SET(CMAKE_VERBOSE_MAKEFILE OFF)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules/")
 
+#flags
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+#set(CMAKE_CXX_FLAGS "-Wall"
+set(CMAKE_CXX_FLAGS " -march=native -Wno-duplicate-decl-specifier -Wno-ignored-qualifiers -Wno-reorder -pthread")
+
 # Versions
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 1)
@@ -70,4 +77,4 @@ add_subdirectory(src/EnvProcessing/VisualOdometry)
 # PROGRAMS
 ##########################################################################################
 ADD_EXECUTABLE(BorisBrain src/Boris_Brain.cpp src/EnvProcessing/VisualOdometry/VO_Pipeline_Live.cpp)
-TARGET_LINK_LIBRARIES(BorisBrain Boris_System_Brain)
+TARGET_LINK_LIBRARIES(BorisBrain BorisBrain_VisualOdometry ${LINK_LIBS_EXTERNAL})

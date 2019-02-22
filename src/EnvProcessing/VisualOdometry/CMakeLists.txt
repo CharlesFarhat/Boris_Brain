@@ -1,4 +1,4 @@
-add_library(ldso
+add_library(BorisBrain_VisualOdometry
         src/Feature.cc
         src/Frame.cc
         src/Point.cc
@@ -30,6 +30,6 @@ add_library(ldso
         src/frontend/ImageRW_OpenCV.cc
 )
 target_link_libraries(
-        ldso
+        BorisBrain_VisualOdometry
         ${THIRD_PARTY_LIBS}
 )

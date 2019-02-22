@@ -59,9 +59,8 @@ int main(int argc, char* argv[])
     CLI::App app("Boris Brain system");
 
     Boris_Brain::Settings run_settings;
-    run_settings.runningDSOLive = 1;
+    run_settings.runningDSOLive = 2; // Set to 2 in order no to launch by default
     run_settings.cameraindex = 0;
-    run_settings.sampleoutput= 0;
     run_settings.debugout_runquiet = 0;
     run_settings.optionPreset = 0;
     run_settings.disableReconfigure = 1;
@@ -87,7 +86,6 @@ int main(int argc, char* argv[])
 
     app.add_option("-c, --cameraIndex", run_settings.cameraindex, "camera index to use", true);
     app.add_option("-l, --runningLive", run_settings.runningDSOLive, "Are you launching live or using the dataset ?", true);
-    app.add_option("-o, --sampleoutput", run_settings.sampleoutput, "use sample output", true);
     app.add_option("-f, --files", run_settings.source, "if you are using dataset MANDATORY !", true);
 
     app.add_option("vocab =", run_settings.vocab, "", true);
@@ -125,27 +123,27 @@ int main(int argc, char* argv[])
 
 
 
-    if (run_settings.runningDSOLive)
+    if (run_settings.runningDSOLive == 1)
     {
         cout << "launching the Direct sparse visual odometry system" << endl;
 
         Boris_Brain::ldso::VO_Pipeline_Live liveDSO(&run_settings);
         liveDSO.lanchLive(run_settings.cameraindex);
     }
-    else if (!run_settings.runningDSOLive)
+    else if (run_settings.runningDSOLive == 0)
     {
         Boris_Brain::ldso::VO_Pipeline_dataset datasetDSO(&run_settings);
         datasetDSO.launch_VO_Dataset();
     }
     else
     {
-        printf("insufficient args !");
+        printf("insufficient args ! \n");
         exit(0);
     }
 
     // TODO : launch REMODE thread to compute High density map
 
     printf("System finished.\n");
-    std::cout << "test over -----> from main system" << std::endl;
+    std::cout << "test over -----> from main system \n" << std::endl;
     return 0;
 }

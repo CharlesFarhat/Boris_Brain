@@ -26,8 +26,8 @@
 
 using namespace std;
 
-using namespace ldso;
-using namespace ldso::internal;
+using namespace Boris_Brain::ldso;
+using namespace Boris_Brain::ldso::internal;
 
 inline int getdir(std::string dir, std::vector<std::string> &files) {
     DIR *dp;

@@ -45,6 +45,13 @@
 
 #include "frontend/FullSystem.h"
 #include "utils/DatasetReader.h"
+#include "Settings.h"
+#include "frontend/Undistort.h"
+#include "frontend/ImageRW.h"
+#include "frontend/ImageAndExposure.h"
+#include "internal/GlobalFuncs.h"
+#include "internal/GlobalCalib.h"
+
 #include "Boris_System_Setup.h"
 #include "CamerasAPI/videoStream.h"
 
@@ -74,11 +81,7 @@ namespace Boris_Brain {
             bool prefetch = false;
             float playbackSpeed = 0;    // 0 for linearize (play as fast as possible, while sequentializing tracking & mapping). otherwise, factor on timestamps.
             bool preload = false;
-            bool useSampleOutput = false;
             int mode = 0;
-            ldso::FullSystem *fullSystem = 0;
-            shared_ptr<ImageFolderReader> reader = 0;
-            shared_ptr<ORBVocabulary> voc = 0;
         };
 
 
@@ -95,9 +98,7 @@ namespace Boris_Brain {
             std::string calib = "";
             std::string vignetteFile = "";
             std::string gammaFile = "";
-            bool useSampleOutput = false;
-            ldso::FullSystem *fullSystem = 0;
-            ldso::Undistort *undistorter = 0;
+            std::string vocPath = "";
             int frameID = 0;
         };
 

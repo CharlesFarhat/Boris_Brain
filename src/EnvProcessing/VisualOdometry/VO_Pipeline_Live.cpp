@@ -36,12 +36,6 @@ namespace Boris_Brain {
 
         VO_Pipeline_dataset::VO_Pipeline_dataset(Settings *run_settings) {
 
-                if (run_settings->sampleoutput == 1)
-                {
-                    useSampleOutput = true;
-                    printf("USING SAMPLE OUTPUT WRAPPER!\n");
-                }
-
                 if (run_settings->debugout_runquiet == 1) {
                     setting_debugout_runquiet = true;
                     printf("QUIET MODE, I'll shut up!\n");
@@ -214,7 +208,8 @@ namespace Boris_Brain {
                 LOG(WARNING) << "show loop closing results. The program will be paused when any loop is found" << endl;
             }
 
-            reader = new ImageFolderReader(ImageFolderReader::TUM_MONO, source, calib, gammaCalib, vignette);
+            shared_ptr<ImageFolderReader> reader(
+                    new ImageFolderReader(ImageFolderReader::TUM_MONO, source, calib, gammaCalib, vignette));
             reader->setGlobalCalibration();
 
 
@@ -236,23 +231,21 @@ namespace Boris_Brain {
             }
 
 
-            voc = new ORBVocabulary();
+            shared_ptr<ORBVocabulary> voc(new ORBVocabulary());
             voc->load(vocPath);
 
-            fullSystem = new FullSystem(voc);
+
+            shared_ptr<FullSystem> fullSystem(new FullSystem(voc));
             fullSystem->setGammaFunction(reader->getPhotometricGamma());
             fullSystem->linearizeOperation = (playbackSpeed == 0);
 
-
-            IOWrap::PangolinDSOViewer *viewer = 0;
+            shared_ptr<PangolinDSOViewer> viewer = nullptr;
             if (!disableAllDisplay) {
-                viewer = new IOWrap::PangolinDSOViewer(wG[0], hG[0], false);
-                fullSystem->outputWrapper.push_back(viewer);
+                viewer = shared_ptr<PangolinDSOViewer>(new PangolinDSOViewer(wG[0], hG[0], false));
+                fullSystem->setViewer(viewer);
+            } else {
+                LOG(INFO) << "visualization is disabled!" << endl;
             }
-
-
-            if (useSampleOutput)
-                fullSystem->outputWrapper.push_back(new IOWrap::SampleOutputWrapper());
 
 
 
@@ -330,20 +323,15 @@ namespace Boris_Brain {
 
                     if (fullSystem->initFailed || setting_fullResetRequested) {
                         if (ii < 250 || setting_fullResetRequested) {
-                            printf("RESETTING!\n");
-
-                            std::vector<IOWrap::Output3DWrapper *> wraps = fullSystem->outputWrapper;
-                            delete fullSystem;
-
-                            for (IOWrap::Output3DWrapper *ow : wraps) ow->reset();
-
-                            fullSystem = new FullSystem();
+                            LOG(INFO) << "Init failed, RESETTING!";
+                            fullSystem = shared_ptr<FullSystem>(new FullSystem(voc));
                             fullSystem->setGammaFunction(reader->getPhotometricGamma());
                             fullSystem->linearizeOperation = (playbackSpeed == 0);
-
-
-                            fullSystem->outputWrapper = wraps;
-
+                            if (viewer) {
+                                viewer->reset();
+                                sleep(1);
+                                fullSystem->setViewer(viewer);
+                            }
                             setting_fullResetRequested = false;
                         }
                     }
@@ -355,6 +343,7 @@ namespace Boris_Brain {
 
                 }
                 fullSystem->blockUntilMappingIsFinished();
+                sleep(10);
                 clock_t ended = clock();
                 struct timeval tv_end;
                 gettimeofday(&tv_end, NULL);
@@ -395,26 +384,16 @@ namespace Boris_Brain {
             });
 
 
-            if (viewer != 0)
+            if (viewer)
                 viewer->run();
 
             runthread.join();
 
-            for (IOWrap::Output3DWrapper *ow : fullSystem->outputWrapper) {
-                ow->join();
-                delete ow;
-            }
-
+            viewer->saveAsPLYFile("./pointcloud.ply");
             printf("EXIT NOW!\n");
         }
 
-        VO_Pipeline_dataset::~VO_Pipeline_dataset() {
-            printf("DELETE FULLSYSTEM!\n");
-            delete fullSystem;
-
-            printf("DELETE READER!\n");
-            delete reader;
-        }
+        VO_Pipeline_dataset::~VO_Pipeline_dataset() {}
 
 
 
@@ -430,12 +409,6 @@ namespace Boris_Brain {
 
         VO_Pipeline_Live::VO_Pipeline_Live(Settings *run_settings)
         {
-
-            if (run_settings->sampleoutput == 1)
-            {
-                useSampleOutput = true;
-                printf("USING SAMPLE OUTPUT WRAPPER!\n");
-            }
 
             if (run_settings->debugout_runquiet == 1) {
                 setting_debugout_runquiet = true;
@@ -468,12 +441,25 @@ namespace Boris_Brain {
             gammaFile = run_settings->gammaCalib;
             printf("loading gammaCalib from %s!\n", gammaFile.c_str());
 
-            printf("could parse argument !!!!\n");
+            if (run_settings->enableLoopClosing == 1) {
+                setting_enableLoopClosing = true;
+                printf("Using loop closure !");
+            } else {
+                setting_enableLoopClosing = false;
+                printf("Not using loop closure !");
+            }
+
+
+            vocPath = run_settings->vocab;
+            printf("loading vocabulary from %s!\n", vocPath.c_str());
+
+            printf("All settings set you're good 2 go !!!!\n");
 
 
         }
 
         void VO_Pipeline_Live::lanchLive(int index) {
+
             setting_desiredImmatureDensity = 1000;
             setting_desiredPointDensity = 1200;
             setting_minFrames = 5;
@@ -488,6 +474,21 @@ namespace Boris_Brain {
             setting_affineOptModeA = 0;
             setting_affineOptModeB = 0;
 
+            // check setting conflicts
+            if (setting_enableLoopClosing && (setting_pointSelection != 1)) {
+                LOG(ERROR) << "Loop closing is enabled but point selection strategy is not set to LDSO, "
+                              "use setting_pointSelection=1! please!" << endl;
+                exit(-1);
+            }
+
+            if (setting_showLoopClosing) {
+                LOG(WARNING) << "show loop closing results. The program will be paused when any loop is found" << endl;
+            }
+
+            shared_ptr<ORBVocabulary> voc(new ORBVocabulary());
+            voc->load(vocPath);
+
+            Undistort *undistorter = 0;
             undistorter = Undistort::getUndistorterForFile(calib, gammaFile, vignetteFile);
 
             setGlobalCalib(
@@ -496,64 +497,66 @@ namespace Boris_Brain {
                     undistorter->getK().cast<float>());
 
 
-            fullSystem = new FullSystem();
+            shared_ptr<FullSystem> fullSystem(new FullSystem(voc));
             fullSystem->linearizeOperation = false;
-
-            if (!disableAllDisplay)
-                fullSystem->outputWrapper.push_back(new IOWrap::PangolinDSOViewer(
-                        (int) undistorter->getSize()[0],
-                        (int) undistorter->getSize()[1]));
-
-
-            if (useSampleOutput)
-                fullSystem->outputWrapper.push_back(new IOWrap::SampleOutputWrapper());
-
-
             if (undistorter->photometricUndist != 0)
                 fullSystem->setGammaFunction(undistorter->photometricUndist->getG());
 
+            shared_ptr<PangolinDSOViewer> viewer = nullptr;
+            if (!disableAllDisplay) {
+                viewer = shared_ptr<PangolinDSOViewer>(new PangolinDSOViewer(wG[0], hG[0], false));
+                fullSystem->setViewer(viewer);
+            } else {
+                LOG(INFO) << "visualization is disabled!" << endl;
+            }
 
-            // Start openCV cameraStream
+            // Start cameraStream
             Boris_Utils::Camera_API::videoStream stream(0, true, true);
 
 
             while (true) {
-
                 cv::Mat img = stream.getImage();
 
                 if (setting_fullResetRequested) {
-                    std::vector<IOWrap::Output3DWrapper *> wraps = fullSystem->outputWrapper;
-                    delete fullSystem;
-                    for (IOWrap::Output3DWrapper *ow : wraps) ow->reset();
-                    fullSystem = new FullSystem();
+                    LOG(INFO) << "Init failed, RESETTING!";
+                    fullSystem = shared_ptr<FullSystem>(new FullSystem(voc));
                     fullSystem->linearizeOperation = false;
-                    fullSystem->outputWrapper = wraps;
+                    if (viewer) {
+                        viewer->reset();
+                        sleep(1);
+                        fullSystem->setViewer(viewer);
+                    }
                     if (undistorter->photometricUndist != 0)
                         fullSystem->setGammaFunction(undistorter->photometricUndist->getG());
                     setting_fullResetRequested = false;
                 }
+
+                // main flow :
                 MinimalImageB minImg((int) img.cols, (int) img.rows, (unsigned char *) img.data);
                 ImageAndExposure *undistImg = undistorter->undistort<unsigned char>(&minImg, 1, 0, 1.0f);
                 fullSystem->addActiveFrame(undistImg, frameID);
                 frameID++;
                 delete undistImg;
 
+                if (fullSystem->isLost) {
+                    LOG(INFO) << "Lost!";
+                    break;
+                }
+
                 char c = (char) cv::waitKey(25);
                 if (c == 27)
                     break;
             }
+
+            if (viewer)
+                viewer->run();  // mac os should keep this in main thread.
+
+            viewer->saveAsPLYFile("./pointcloud.ply");
+            LOG(INFO) << "EXIT NOW!";
+
         }
 
 
-        VO_Pipeline_Live::~VO_Pipeline_Live() {
-
-            for (IOWrap::Output3DWrapper *ow : fullSystem->outputWrapper) {
-                ow->join();
-                delete ow;
-            }
-
-            delete undistorter;
-            delete fullSystem;
-        }
+        VO_Pipeline_Live::~VO_Pipeline_Live() {}
     }
 }

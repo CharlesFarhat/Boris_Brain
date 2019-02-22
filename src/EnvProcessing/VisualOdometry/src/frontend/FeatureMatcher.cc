@@ -23,7 +23,7 @@ namespace Boris_Brain {
             for (int i = 0; i < 8; i++, pa++, pb++) {
                 unsigned int v = *pa ^*pb;
 #ifdef __SSE2__
-                dist += _mm_popcnt_u64(v);  // SSE is so easy
+           //     dist += _mm_popcnt_u64(v);  // SSE is so easy
 #else
                 v = v - ( ( v >> 1 ) & 0x55555555 );
                 v = ( v & 0x33333333 ) + ( ( v >> 2 ) & 0x33333333 );

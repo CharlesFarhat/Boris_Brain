@@ -7,7 +7,7 @@
 
 using namespace std;
 
-using namespace ldso::internal;
+using namespace Boris_Brain::ldso::internal;
 
 namespace Boris_Brain {
     namespace ldso {

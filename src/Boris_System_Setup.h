@@ -24,7 +24,6 @@ struct Settings
 
     int runningDSOLive;             /// Are you willing to launch a dataset ?
     int cameraindex;                /// Camera To use
-    int sampleoutput;               /// USING SAMPLE OUTPUT WRAPPER!
     int debugout_runquiet;         /// Quiet mode
     int optionPreset;              /// Preset to use 1 / 2 ...
     int disableReconfigure;
