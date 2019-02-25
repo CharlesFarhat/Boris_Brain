@@ -89,6 +89,7 @@ namespace Boris_Brain {
                 usleep(5000);
             }
 
+            LOG(INFO) << "Loop closing main thread down ! " << endl;
             finished = true;
         }
 

@@ -337,7 +337,8 @@ namespace Boris_Brain {
 
         PangolinDSOViewer::~PangolinDSOViewer() {
             close();
-            runThread.join();
+            if (runThread.joinable())
+                runThread.join(); // FUCK YOU !!!
         }
 
         void PangolinDSOViewer::run() {

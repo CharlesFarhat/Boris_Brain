@@ -55,13 +55,16 @@ namespace Boris_Brain {
         }
 
         FullSystem::~FullSystem() {
-            blockUntilMappingIsFinished();
+            LOG(INFO) << "Calling full system destructor !" << endl;
+            if (!mappingIsKilled)
+                blockUntilMappingIsFinished();
             // remember to release the inner structure
             this->unmappedTrackedFrames.clear();
             if (setting_enableLoopClosing == false) {
                 delete[] selectionMap;
             } else {
             }
+
         }
 
         void FullSystem::addActiveFrame(ImageAndExposure *image, int id) {
@@ -381,15 +384,20 @@ namespace Boris_Brain {
             return Vec4(achievedRes[0], flowVecs[0], flowVecs[1], flowVecs[2]);
         }
 
-        void FullSystem::blockUntilMappingIsFinished() {
-            unique_lock<mutex> lock(trackMapSyncMutex);
-            runMapping = false;
-            trackedFrameSignal.notify_all();
-            lock.unlock();
-            mappingThread.join();
+        void FullSystem::blockUntilMappingIsFinished()
+        {
+                LOG(INFO) << "Trying to kill mapping thread" << endl;
 
-            if (setting_enableLoopClosing)
-                loopClosing->SetFinish(true);
+                unique_lock<mutex> lock(trackMapSyncMutex);
+                runMapping = false;
+                trackedFrameSignal.notify_all();
+                lock.unlock();
+                mappingThread.join();
+
+                if (setting_enableLoopClosing)
+                    loopClosing->SetFinish(true);
+
+                mappingIsKilled = true;
         }
 
         void FullSystem::makeKeyFrame(shared_ptr<FrameHessian> fh) {
@@ -1800,9 +1808,10 @@ namespace Boris_Brain {
             while (runMapping) {
 
                 // wait an unmapped frame
-                while (unmappedTrackedFrames.size() == 0) {
+                while (unmappedTrackedFrames.size() == 0 && runMapping) {
                     trackedFrameSignal.wait(lock);
-                    if (!runMapping) return;
+                    if (!runMapping)
+                        return;
                 }
 
                 // get an unmapped frame, tackle it.
@@ -1852,7 +1861,9 @@ namespace Boris_Brain {
 
                 mappedFrameSignal.notify_all();
             }
+
             LOG(INFO) << "MAPPING FINISHED!";
+
         }
 
         bool FullSystem::saveAll(const string &filename) {

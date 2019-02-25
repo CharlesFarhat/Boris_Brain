@@ -343,13 +343,13 @@ namespace Boris_Brain {
 
                 }
                 fullSystem->blockUntilMappingIsFinished();
-                sleep(10);
+                sleep(1);
                 clock_t ended = clock();
                 struct timeval tv_end;
                 gettimeofday(&tv_end, NULL);
 
 
-                fullSystem->printResult("result.txt");
+                // fullSystem->printResult("result.txt");
 
 
                 int numFramesProcessed = abs(idsToPlay[0] - idsToPlay.back());
@@ -382,7 +382,6 @@ namespace Boris_Brain {
                 }
 
             });
-
 
             if (viewer)
                 viewer->run();
@@ -553,7 +552,6 @@ namespace Boris_Brain {
 
             viewer->saveAsPLYFile("./pointcloud.ply");
             LOG(INFO) << "EXIT NOW!";
-
         }
 
 

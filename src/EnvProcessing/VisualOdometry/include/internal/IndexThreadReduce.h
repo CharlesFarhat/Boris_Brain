@@ -49,8 +49,7 @@ namespace Boris_Brain {
                     for (int i = 0; i < NUM_THREADS; i++)
                         workerThreads[i].join();
 
-
-                    printf("destroyed ThreadReduce\n");
+                    LOG(INFO) << "All thread reduce threads are dead" << endl;
 
                 }
 

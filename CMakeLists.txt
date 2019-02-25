@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.5)
 # Project
 set(PROJECT Boris_System_Brain)
 project(${PROJECT})
-SET(CMAKE_BUILD_TYPE Release) # Release, RelWithDebInfo
+SET(CMAKE_BUILD_TYPE RelWithDebInfo) # Release, RelWithDebInfo
 SET(CMAKE_VERBOSE_MAKEFILE OFF)
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules/")
 

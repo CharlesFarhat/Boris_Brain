@@ -312,6 +312,7 @@ namespace Boris_Brain {
 
             thread mappingThread;
             bool runMapping = true;
+            bool mappingIsKilled = false;
             bool needToKetchupMapping = false;
 
         public:
